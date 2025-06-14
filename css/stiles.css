@@ -209,43 +209,118 @@ nav {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 25px;
+    padding: 2rem;
 }
 
-.image-card {
-    background: var(--white);
-    border-radius: 12px;
+.gallery-grid.list-view {
+    grid-template-columns: 1fr;
+}
+
+.gallery-grid.list-view .card {
+    display: flex;
+    height: 200px;
+}
+
+.gallery-grid.list-view .card img {
+    width: 200px;
+    height: 100%;
+}
+
+.gallery-grid.list-view .overlay {
+    position: absolute;
+    right: 0;
+    width: 200px;
+}
+
+.card {
+    position: relative;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
-    animation: fadeIn 0.5s ease forwards;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    background: var(--secondary-color);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+}
+
+.card .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
     opacity: 0;
-    transform: translateY(20px);
-    position: relative;
+    transition: opacity 0.3s ease;
 }
 
-.image-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 25px rgba(var(--black-rgb), 0.15);
+.card:hover .overlay {
+    opacity: 1;
 }
 
-.image-container {
-    height: 220px;
-    overflow: hidden;
-    position: relative;
+.card .download-btn {
+    background: var(--accent-color);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.image-container img {
+.card .download-btn:hover {
+    transform: scale(1.1);
+    background: var(--primary-color);
+}
+
+.card .download-btn i {
+    color: white;
+    font-size: 1.2rem;
+}
+
+.card .download-btn.downloading {
+    background: var(--primary-color);
+    pointer-events: none;
+}
+
+.card .download-btn.downloading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.video-player {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: var(--transition);
+    position: relative;
 }
 
-.image-card:hover .image-container img {
-    transform: scale(1.05);
+.video-player.censored {
+    filter: blur(15px);
 }
 
-.censored-overlay {
+.card .censored-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -257,17 +332,17 @@ nav {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition: var(--transition);
+    z-index: 2;
 }
 
-.censored-overlay i {
+.card .censored-overlay i {
     font-size: 3rem;
     color: rgba(var(--white-rgb), 0.7);
     margin-bottom: 15px;
     animation: pulse 2s infinite;
 }
 
-.censored-overlay h3 {
+.card .censored-overlay h3 {
     color: var(--white);
     font-weight: 500;
     text-align: center;
@@ -290,77 +365,12 @@ nav {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2;
-}
-
-/* Ocultar el botón cuando la imagen no está censurada */
-.image-container:not(:has(.censored-overlay)) .unlock-btn {
-    display: none;
+    z-index: 3;
 }
 
 .unlock-btn:hover {
     background: var(--primary);
     transform: scale(1.1);
-}
-
-.image-info {
-    padding: 15px;
-}
-
-.image-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: var(--dark);
-}
-
-.image-meta {
-    display: flex;
-    justify-content: space-between;
-    color: var(--gray);
-    font-size: 0.9rem;
-}
-
-.image-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 12px;
-}
-
-.image-actions button {
-    flex: 1;
-    padding: 8px 0;
-    border: none;
-    border-radius: 6px;
-    background: rgba(var(--primary-rgb), 0.1);
-    color: var(--primary);
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.image-actions button:hover {
-    background: var(--primary);
-    color: var(--white);
-}
-
-/* Featured Badge */
-.featured-badge {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    background: linear-gradient(to right, var(--featured-start), var(--featured-end));
-    color: var(--white);
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    z-index: 10;
-    box-shadow: 0 2px 5px rgba(var(--black-rgb), 0.2);
 }
 
 /* Footer */
@@ -948,4 +958,192 @@ footer {
 
 :root {
     --warning: #ff9800;
+}
+
+/* Estilos mejorados para el Modal de Términos y Condiciones */
+#termsModal .modal-content {
+    max-width: 800px;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: var(--white);
+    border-radius: 15px;
+    box-shadow: 0 5px 30px rgba(var(--black-rgb), 0.3);
+}
+
+#termsModal .modal-header {
+    background: linear-gradient(to right, var(--primary), var(--primary-dark));
+    color: var(--white);
+    padding: 25px;
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#termsModal .modal-header i {
+    font-size: 2rem;
+    color: var(--accent);
+}
+
+#termsModal .modal-header h2 {
+    font-size: 1.8rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+#termsModal .modal-body {
+    padding: 30px;
+}
+
+#termsModal .terms-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(var(--primary-rgb), 0.05);
+    border-radius: 10px;
+    border-left: 4px solid var(--primary);
+}
+
+#termsModal .terms-section h3 {
+    color: var(--primary-dark);
+    margin: 0 0 15px 0;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#termsModal .terms-section h3 i {
+    color: var(--primary);
+}
+
+#termsModal .terms-section p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+    color: var(--dark);
+}
+
+#termsModal .terms-section ul {
+    margin: 0 0 15px 20px;
+    list-style: none;
+}
+
+#termsModal .terms-section ul li {
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 25px;
+    line-height: 1.5;
+}
+
+#termsModal .terms-section ul li::before {
+    content: '•';
+    color: var(--primary);
+    position: absolute;
+    left: 0;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+#termsModal .warning-text {
+    background: rgba(255, 152, 0, 0.1);
+    color: #f57c00;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #f57c00;
+    font-weight: 600;
+    margin-top: 15px;
+}
+
+#termsModal .checkbox-container {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(var(--primary-rgb), 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+#termsModal .checkbox-container input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    margin-top: 3px;
+    cursor: pointer;
+    accent-color: var(--primary);
+}
+
+#termsModal .checkbox-container label {
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--dark);
+    cursor: pointer;
+    flex: 1;
+}
+
+#termsModal .modal-footer {
+    padding: 20px 30px;
+    background: rgba(var(--primary-rgb), 0.05);
+    border-top: 1px solid rgba(var(--primary-rgb), 0.1);
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    border-radius: 0 0 15px 15px;
+}
+
+#termsModal .btn-primary,
+#termsModal .btn-secondary {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+#termsModal .btn-primary {
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+}
+
+#termsModal .btn-primary:hover:not(:disabled) {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+}
+
+#termsModal .btn-secondary {
+    background: var(--light-gray);
+    color: var(--dark);
+    border: none;
+}
+
+#termsModal .btn-secondary:hover {
+    background: var(--gray);
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
+#termsModal .btn-primary:disabled {
+    background: var(--gray);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Estilos para el scrollbar del modal */
+#termsModal .modal-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+#termsModal .modal-content::-webkit-scrollbar-track {
+    background: rgba(var(--primary-rgb), 0.1);
+    border-radius: 5px;
+}
+
+#termsModal .modal-content::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 5px;
+}
+
+#termsModal .modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark);
 }

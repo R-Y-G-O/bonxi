@@ -1,7 +1,45 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Variables para el manejo de la verificación de edad
+    // Variables para el manejo de términos y condiciones
+    let hasAcceptedTerms = localStorage.getItem('hasAcceptedTerms') === 'true';
     let hasVerifiedAge = localStorage.getItem('hasVerifiedAge') === 'true';
     let pendingUnlockAction = null;
+
+    // Función para mostrar el modal de términos y condiciones
+    function showTermsModal() {
+        const modal = document.getElementById('termsModal');
+        const acceptCheckbox = document.getElementById('acceptTerms');
+        const acceptBtn = document.getElementById('acceptTermsBtn');
+        const declineBtn = document.getElementById('declineTerms');
+
+        modal.classList.add('show');
+
+        // Habilitar/deshabilitar botón de aceptar según el checkbox
+        acceptCheckbox.addEventListener('change', () => {
+            acceptBtn.disabled = !acceptCheckbox.checked;
+        });
+
+        // Manejar aceptación de términos
+        acceptBtn.addEventListener('click', () => {
+            localStorage.setItem('hasAcceptedTerms', 'true');
+            hasAcceptedTerms = true;
+            modal.classList.remove('show');
+            
+            // Si hay contenido adulto, mostrar advertencia
+            if (!hasVerifiedAge) {
+                showAdultWarningModal(() => {});
+            }
+        });
+
+        // Manejar rechazo de términos
+        declineBtn.addEventListener('click', () => {
+            window.location.href = 'https://www.google.com';
+        });
+    }
+
+    // Verificar si es la primera visita
+    if (!hasAcceptedTerms) {
+        showTermsModal();
+    }
 
     // Función para mostrar el modal de advertencia
     function showAdultWarningModal(callback) {
@@ -51,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         // Mezclar el array y tomar 12 imágenes
-        return allImages.sort(() => Math.random() - 0.5).slice(0, 12);
+        return allImages.sort(() => Math.random() - 0.5).slice(0, 24);
     }
 
     // Función para cargar el estado de desbloqueo desde localStorage
@@ -256,25 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Función para desbloquear todas las imágenes censuradas
-    function unlockAllImages() {
-        const censoredImages = document.querySelectorAll('.card img.censored');
-        const unlockButtons = document.querySelectorAll('.unlock-btn');
-        
-        censoredImages.forEach(img => {
-            img.classList.remove('censored');
-            // Agregar la URL de la imagen al set de desbloqueadas
-            unlockedImages.add(img.src);
-        });
-        
-        unlockButtons.forEach(btn => {
-            btn.innerHTML = '<i class="fas fa-unlock"></i>';
-        });
-
-        // Guardar el estado actualizado
-        saveUnlockedState();
-    }
-
     // Función para actualizar el título y el icono según la categoría
     function updateTitleAndIcon(category) {
         const titleElement = document.querySelector('.section-title');
@@ -371,60 +390,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Función para inicializar los botones de favoritos
-    function initializeFavorites() {
-        const favoriteButtons = document.querySelectorAll('.favorite-btn');
-        const favoritesSection = document.querySelector('.section-title:has(i.fa-heart)').nextElementSibling;
-
-        favoriteButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const card = button.closest('.image-card');
-                const icon = button.querySelector('i');
-                
-                if (card.classList.contains('favorite')) {
-                    card.classList.remove('favorite');
-                    icon.style.color = '';
-                    button.innerHTML = '<i class="fas fa-heart"></i> Favorito';
-                } else {
-                    card.classList.add('favorite');
-                    icon.style.color = '#f44336';
-                    button.innerHTML = '<i class="fas fa-heart"></i> Quitar';
-                }
-                
-                updateFavoritesSection();
-            });
-        });
-    }
-
-    // Función para actualizar la sección de favoritos
-    function updateFavoritesSection() {
-        const favoritesSection = document.querySelector('.section-title:has(i.fa-heart)').nextElementSibling;
-        favoritesSection.innerHTML = '';
-        
-        const favoriteCards = document.querySelectorAll('.image-card.favorite');
-        
-        if (favoriteCards.length === 0) {
-            const noFavorites = createElement('div', 'no-favorites');
-            
-            const brokenHeart = createElement('i', 'fas fa-heart-broken');
-            noFavorites.appendChild(brokenHeart);
-            
-            const message = createElement('p');
-            message.textContent = 'No tienes imágenes favoritas aún';
-            noFavorites.appendChild(message);
-            
-            favoritesSection.appendChild(noFavorites);
-        } else {
-            favoriteCards.forEach(card => {
-                const clone = card.cloneNode(true);
-                favoritesSection.appendChild(clone);
-            });
-        }
-    }
-
     // Inicializar la galería
     initializeFilters();
-    initializeFavorites();
 
     // Inicializar la vista de cuadrícula/lista
     const viewButtons = document.querySelectorAll('.view-btn');
@@ -447,8 +414,8 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('keyup', (e) => {
         if (e.key === 'Enter') {
             const searchTerm = searchInput.value.toLowerCase();
-            document.querySelectorAll('.image-card').forEach(card => {
-                const title = card.querySelector('.image-title').textContent.toLowerCase();
+            document.querySelectorAll('.card').forEach(card => {
+                const title = card.querySelector('img').alt.toLowerCase();
                 card.style.display = title.includes(searchTerm) ? 'block' : 'none';
             });
         }

@@ -32,9 +32,6 @@
     <div class="container">
             <ul class="nav-tabs">
                 <li><a href="#" class="active"><i class="fas fa-home"></i> Inicio</a></li>
-                <li><a href="#"><i class="fas fa-fire"></i> Destacados</a></li>
-                <li><a href="#"><i class="fas fa-heart"></i> Favoritos</a></li>
-                <li><a href="#"><i class="fas fa-history"></i> Recientes</a></li>
                 <li><a href="#" id="unlockAllBtn"><i class="fas fa-unlock-alt"></i> Desbloquear</a></li>
             </ul>
         </div>
@@ -72,33 +69,13 @@
         </div>
         
         <!-- Featured Section -->
-            <div class="section-title">
-                <i class="fas fa-star"></i>
+        <div class="section-title">
+            <i class="fas fa-star"></i>
             <h2>Imágenes Destacadas</h2>
-            </div>
+        </div>
             
         <div class="gallery-grid">
             <!-- Las tarjetas se generarán dinámicamente aquí -->
-                </div>
-                
-        <!-- Favorites Section -->
-        <div class="section-title">
-            <i class="fas fa-heart"></i>
-            <h2>Tus Favoritos</h2>
-    </div>
-    
-        <div class="gallery-grid favorites-grid">
-            <!-- Las tarjetas favoritas se generarán dinámicamente aquí -->
-            </div>
-            
-        <!-- Recent Section -->
-        <div class="section-title">
-            <i class="fas fa-clock"></i>
-            <h2>Recientes</h2>
-            </div>
-            
-        <div class="gallery-grid recent-grid">
-            <!-- Las tarjetas recientes se generarán dinámicamente aquí -->
         </div>
     </main>
 
@@ -125,6 +102,109 @@
             <div class="modal-footer">
                 <button id="cancelUnlock" class="btn-secondary">Cancelar</button>
                 <button id="confirmUnlock" class="btn-primary">Soy mayor de 18 años</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Términos y Condiciones -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-shield-alt"></i>
+                <h2>Términos y Condiciones de Uso</h2>
+            </div>
+            <div class="modal-body">
+                <div class="terms-section">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Advertencia Importante</h3>
+                    <p>Al acceder y utilizar Galería Bonxi, usted acepta estar legalmente obligado por estos términos y condiciones. Si no está de acuerdo con estos términos, por favor absténgase de utilizar este sitio.</p>
+                </div>
+
+                <div class="terms-section">
+                    <h3><i class="fas fa-images"></i> 1. Naturaleza del Contenido</h3>
+                    <p>Este sitio web contiene material que incluye, pero no se limita a:</p>
+                    <ul>
+                        <li>Contenido artístico y creativo de diversas categorías</li>
+                        <li>Contenido para adultos (+18) con censura</li>
+                        <li>Contenido de fantasía y ficción</li>
+                        <li>Contenido de terror y suspense</li>
+                        <li>Contenido furry y antropomórfico</li>
+                    </ul>
+                    <p class="warning-text">ADVERTENCIA: Algunas imágenes pueden contener contenido explícito o perturbador.</p>
+                </div>
+
+                <div class="terms-section">
+                    <h3><i class="fas fa-user-shield"></i> 2. Requisitos de Edad y Responsabilidad</h3>
+                    <p>Al acceder a este sitio, usted declara y garantiza que:</p>
+                    <ul>
+                        <li>Tiene al menos 18 años de edad</li>
+                        <li>Accede al contenido de forma voluntaria y consciente</li>
+                        <li>No compartirá el contenido con menores de edad</li>
+                        <li>Es responsable de mantener la confidencialidad de su acceso</li>
+                        <li>No utilizará el sitio en lugares públicos o compartidos</li>
+                    </ul>
+                </div>
+
+                <div class="terms-section">
+                    <h3><i class="fas fa-copyright"></i> 3. Derechos de Propiedad Intelectual</h3>
+                    <p>Todo el contenido de este sitio está protegido por derechos de autor. Usted acepta:</p>
+                    <ul>
+                        <li>No reproducir, distribuir o modificar el contenido sin autorización</li>
+                        <li>No utilizar el contenido con fines comerciales</li>
+                        <li>No eliminar o alterar las marcas de agua o atribuciones</li>
+                        <li>Respetar los derechos de los creadores originales</li>
+                    </ul>
+                </div>
+
+                <div class="terms-section">
+                    <h3><i class="fas fa-lock"></i> 4. Privacidad y Seguridad</h3>
+                    <p>Su privacidad es importante. Al utilizar este sitio, usted acepta:</p>
+                    <ul>
+                        <li>El uso de cookies para mejorar su experiencia</li>
+                        <li>El almacenamiento seguro de sus preferencias</li>
+                        <li>La recopilación de datos de uso anónimos</li>
+                        <li>No compartir su acceso con terceros</li>
+                    </ul>
+                </div>
+
+                <div class="terms-section">
+                    <h3><i class="fas fa-ban"></i> 5. Conducta Prohibida</h3>
+                    <p>Está estrictamente prohibido:</p>
+                    <ul>
+                        <li>Compartir el contenido en redes sociales públicas</li>
+                        <li>Utilizar el contenido para acoso o discriminación</li>
+                        <li>Intentar eludir las medidas de seguridad</li>
+                        <li>Realizar acciones que puedan dañar el sitio</li>
+                    </ul>
+                </div>
+
+                <div class="terms-section">
+                    <h3><i class="fas fa-gavel"></i> 6. Limitación de Responsabilidad</h3>
+                    <p>El sitio se proporciona "tal cual", sin garantías. No somos responsables por:</p>
+                    <ul>
+                        <li>Daños causados por el uso del contenido</li>
+                        <li>Problemas técnicos o interrupciones del servicio</li>
+                        <li>Consecuencias del uso indebido del contenido</li>
+                    </ul>
+                </div>
+
+                <div class="terms-section">
+                    <h3><i class="fas fa-file-signature"></i> 7. Modificaciones</h3>
+                    <p>Nos reservamos el derecho de:</p>
+                    <ul>
+                        <li>Modificar estos términos en cualquier momento</li>
+                        <li>Cambiar o eliminar contenido sin previo aviso</li>
+                        <li>Terminar el acceso de usuarios que violen estos términos</li>
+                    </ul>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="acceptTerms">
+                    <label for="acceptTerms">He leído, comprendido y acepto todos los términos y condiciones establecidos anteriormente</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="declineTerms" class="btn-secondary">Rechazar</button>
+                <button id="acceptTermsBtn" class="btn-primary" disabled>Aceptar</button>
             </div>
         </div>
     </div>
