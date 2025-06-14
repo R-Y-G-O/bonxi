@@ -1,0 +1,48 @@
+:root {
+    /* Colores base */
+    --primary: #2e7d32;
+    --primary-light: #4caf50;
+    --primary-dark: #1b5e20;
+    --accent: #76ff03;
+    --light: #f5f5f5;
+    --dark: #212121;
+    --gray: #757575;
+    --light-gray: #e0e0e0;
+    
+    /* Nuevas variables para todos los colores */
+    --light-green-1: #f1f8e9;
+    --light-green-2: #e8f5e9;
+    --featured-start: #ff9800;
+    --featured-end: #ff5722;
+    --white: #ffffff;
+    --black: #000000;
+    
+    /* Variables para colores en formato RGB */
+    --white-rgb: 255, 255, 255;
+    --black-rgb: 0, 0, 0;
+    --primary-rgb: 46, 125, 50;
+    
+    /* Componentes de estilo */
+    --shadow: 0 4px 20px rgba(var(--black-rgb), 0.1);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, var(--light-green-1), var(--light-green-2));
+    color: var(--dark);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}

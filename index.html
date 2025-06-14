@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeria Verde - Biblioteca de Imágenes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/root.css">
+    <link rel="stylesheet" href="css/stiles.css">
+</head>
+<body>
+    <!-- Header with Search -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-images"></i>
+                <h1>Galería Bonxi</h1>
+            </div>
+            <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar imágenes...">
+            </div>
+            <div class="user-actions">
+                <button><i class="fas fa-user"></i></button>
+                <button><i class="fas fa-cog"></i></button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Navigation Tabs -->
+    <nav>
+    <div class="container">
+            <ul class="nav-tabs">
+                <li><a href="#" class="active"><i class="fas fa-home"></i> Inicio</a></li>
+                <li><a href="#"><i class="fas fa-fire"></i> Destacados</a></li>
+                <li><a href="#"><i class="fas fa-heart"></i> Favoritos</a></li>
+                <li><a href="#"><i class="fas fa-history"></i> Recientes</a></li>
+                <li><a href="#" id="unlockAllBtn"><i class="fas fa-unlock-alt"></i> Desbloquear</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-options">
+                <div class="menu">
+                    <button class="menu-item active" data-category="destacadas">Destacadas</button>
+                    <button class="menu-item" data-category="vanilla">Vanilla</button>
+                    <button class="menu-item" data-category="cencura">Censurada +18</button>
+                    <button class="menu-item" data-category="vampira">Vampira</button>
+                    <button class="menu-item" data-category="milf">Milf</button>
+                    <button class="menu-item" data-category="gotica">Gótica</button>
+                    <button class="menu-item" data-category="morena">Morena</button>
+                    <button class="menu-item" data-category="bikini">Bikini</button>
+                    <button class="menu-item" data-category="trabajo">Trabajo</button>
+                    <button class="menu-item" data-category="vestido">Vestido</button>
+                    <button class="menu-item" data-category="furry">Furry</button>
+                    <button class="menu-item" data-category="desgarada">Desgarada</button>
+                    <button class="menu-item" data-category="terror">Terror</button>
+                    <button class="menu-item" data-category="chibi">Chibi</button>
+                    <button class="menu-item" data-category="centauro">Centauro</button>
+                    <button class="menu-item" data-category="cliks">Cliks</button>
+                    <button class="menu-item" data-category="cliks18">Cliks +18</button>
+                </div>
+            </div>
+            <div class="view-toggle">
+                <button class="view-btn active"><i class="fas fa-th"></i></button>
+                <button class="view-btn"><i class="fas fa-th-list"></i></button>
+            </div>
+        </div>
+        
+        <!-- Featured Section -->
+            <div class="section-title">
+                <i class="fas fa-star"></i>
+            <h2>Imágenes Destacadas</h2>
+            </div>
+            
+        <div class="gallery-grid">
+            <!-- Las tarjetas se generarán dinámicamente aquí -->
+                </div>
+                
+        <!-- Favorites Section -->
+        <div class="section-title">
+            <i class="fas fa-heart"></i>
+            <h2>Tus Favoritos</h2>
+    </div>
+    
+        <div class="gallery-grid favorites-grid">
+            <!-- Las tarjetas favoritas se generarán dinámicamente aquí -->
+            </div>
+            
+        <!-- Recent Section -->
+        <div class="section-title">
+            <i class="fas fa-clock"></i>
+            <h2>Recientes</h2>
+            </div>
+            
+        <div class="gallery-grid recent-grid">
+            <!-- Las tarjetas recientes se generarán dinámicamente aquí -->
+        </div>
+    </main>
+
+    <!-- Modal de Advertencia de Contenido Adulto -->
+    <div id="adultWarningModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h2>Advertencia de Contenido Adulto</h2>
+            </div>
+            <div class="modal-body">
+                <p>Este contenido está restringido para adultos mayores de 18 años.</p>
+                <p>Al proceder, confirmas que:</p>
+                <ul>
+                    <li>Tienes 18 años o más</li>
+                    <li>Estás accediendo a este contenido de forma voluntaria</li>
+                    <li>No compartirás este contenido con menores de edad</li>
+                </ul>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="rememberChoice">
+                    <label for="rememberChoice">Recordar mi elección</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelUnlock" class="btn-secondary">Cancelar</button>
+                <button id="confirmUnlock" class="btn-primary">Soy mayor de 18 años</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
