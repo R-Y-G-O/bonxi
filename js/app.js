@@ -432,8 +432,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const unlockAllBtn = document.getElementById('unlockAllBtn');
         if (unlockAllBtn) {
             unlockAllBtn.innerHTML = allImagesUnlocked ? 
-                '<i class="fas fa-lock"></i> Bloquear' : 
-                '<i class="fas fa-unlock-alt"></i> Desbloquear';
+                '<i class="fas fa-lock"></i> Bloquear +18' : 
+                '<i class="fas fa-unlock-alt"></i> Desbloquear +18';
         }
     });
 
