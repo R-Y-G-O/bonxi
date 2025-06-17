@@ -1,613 +1,127 @@
+// Definición de rutas base y configuración
+const CONFIG = {
+    basePaths: {
+        images: 'images/',
+        videos: 'videos/'
+    },
+    maxImagesPerCategory: 500,
+    maxFeaturedImages: 12,
+    categories: [
+        'bikini', 'cencura', 'centauro', 'chibi', 'desgarada',
+        'furry', 'gotica', 'milf', 'morena', 'terror',
+        'trabajo', 'vampira', 'vanilla', 'vestido'
+    ],
+    videoCategories: {
+        cliks: { count: 5, path: 'cliks/clik' },
+        cliks18: { count: 6, path: 'cliks_+18/clik_+18' }
+    }
+};
+
+// Cache para almacenar imágenes verificadas
+const imageCache = new Map();
+
+// Función para verificar si una imagen existe (con caché)
+async function verificarImagen(url) {
+    if (imageCache.has(url)) {
+        return imageCache.get(url);
+    }
+
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            imageCache.set(url, true);
+            resolve(true);
+        };
+        img.onerror = () => {
+            imageCache.set(url, false);
+            resolve(false);
+        };
+        img.src = url;
+    });
+}
+
+// Función para crear array de imágenes verificadas (optimizada)
+async function crearArrayImagenes(categoria, maxNumero) {
+    const imagenes = [];
+    const promesas = [];
+
+    for (let i = 1; i <= maxNumero; i++) {
+        const url = `${CONFIG.basePaths.images}${categoria}/${categoria} (${i}).webp`;
+        promesas.push(
+            verificarImagen(url).then(existe => {
+                if (existe) {
+                    imagenes.push({
+                        name: `${categoria.charAt(0).toUpperCase() + categoria.slice(1)} ${i}`,
+                        url: url
+                    });
+                }
+            })
+        );
+    }
+
+    await Promise.all(promesas);
+    return imagenes;
+}
+
+// Función para actualizar destacadas
+function actualizarDestacadas() {
+    const todasLasImagenes = [];
+    CONFIG.categories.forEach(categoria => {
+        if (imageConfig[categoria]) {
+            todasLasImagenes.push(...imageConfig[categoria]);
+        }
+    });
+
+    // Seleccionar imágenes aleatorias para destacadas
+    const destacadas = [];
+    const totalImagenes = todasLasImagenes.length;
+    const indicesUsados = new Set();
+
+    while (destacadas.length < CONFIG.maxFeaturedImages && indicesUsados.size < totalImagenes) {
+        const indiceAleatorio = Math.floor(Math.random() * totalImagenes);
+        if (!indicesUsados.has(indiceAleatorio)) {
+            indicesUsados.add(indiceAleatorio);
+            destacadas.push(todasLasImagenes[indiceAleatorio]);
+        }
+    }
+
+    imageConfig.destacadas = destacadas;
+}
+
+// Configuración inicial
 const imageConfig = {
-    'destacadas': [], // Se llenará dinámicamente
-    'bikini': [
-        { name: 'Bikini 1', url: 'images/bikini/bikini (1).png' },
-        { name: 'Bikini 2', url: 'images/bikini/bikini (2).png' },
-        { name: 'Bikini 3', url: 'images/bikini/bikini (3).png' },
-        { name: 'Bikini 4', url: 'images/bikini/bikini (4).png' },
-        { name: 'Bikini 5', url: 'images/bikini/bikini (5).png' },
-        { name: 'Bikini 6', url: 'images/bikini/bikini (6).png' },
-        { name: 'Bikini 7', url: 'images/bikini/bikini (7).png' },
-        { name: 'Bikini 8', url: 'images/bikini/bikini (8).png' },
-        { name: 'Bikini 9', url: 'images/bikini/bikini (9).png' },
-        { name: 'Bikini 10', url: 'images/bikini/bikini (10).png' },
-        { name: 'Bikini 11', url: 'images/bikini/bikini (11).png' },
-        { name: 'Bikini 12', url: 'images/bikini/bikini (12).png' },
-        { name: 'Bikini 13', url: 'images/bikini/bikini (13).png' },
-        { name: 'Bikini 14', url: 'images/bikini/bikini (14).png' },
-        { name: 'Bikini 15', url: 'images/bikini/bikini (15).png' },
-        { name: 'Bikini 16', url: 'images/bikini/bikini (16).png' },
-        { name: 'Bikini 17', url: 'images/bikini/bikini (17).png' },
-        { name: 'Bikini 18', url: 'images/bikini/bikini (18).png' },
-        { name: 'Bikini 19', url: 'images/bikini/bikini (19).png' },
-        { name: 'Bikini 20', url: 'images/bikini/bikini (20).png' },
-        { name: 'Bikini 21', url: 'images/bikini/bikini (21).png' },
-        { name: 'Bikini 22', url: 'images/bikini/bikini (22).png' },
-        { name: 'Bikini 23', url: 'images/bikini/bikini (23).png' },
-        { name: 'Bikini 24', url: 'images/bikini/bikini (24).png' },
-        { name: 'Bikini 25', url: 'images/bikini/bikini (25).png' },
-        { name: 'Bikini 26', url: 'images/bikini/bikini (26).png' },
-        { name: 'Bikini 27', url: 'images/bikini/bikini (27).png' },
-        { name: 'Bikini 28', url: 'images/bikini/bikini (28).png' },
-        { name: 'Bikini 29', url: 'images/bikini/bikini (29).png' },
-        { name: 'Bikini 30', url: 'images/bikini/bikini (30).png' },
-        { name: 'Bikini 31', url: 'images/bikini/bikini (31).png' },
-        { name: 'Bikini 32', url: 'images/bikini/bikini (32).png' },
-        { name: 'Bikini 33', url: 'images/bikini/bikini (33).png' },
-        { name: 'Bikini 34', url: 'images/bikini/bikini (34).png' },
-        { name: 'Bikini 35', url: 'images/bikini/bikini (35).png' },
-        { name: 'Bikini 36', url: 'images/bikini/bikini (36).png' },
-        { name: 'Bikini 37', url: 'images/bikini/bikini (37).png' },
-        { name: 'Bikini 38', url: 'images/bikini/bikini (38).png' }
+    'destacadas': [] // Se llenará dinámicamente
+};
 
-      
-    ],
-    'cencura': [
-        { name: 'Censurada 1', url: 'images/cencura/cencura (1).png' },
-        { name: 'Censurada 2', url: 'images/cencura/cencura (2).png' },
-        { name: 'Censurada 3', url: 'images/cencura/cencura (3).png' },
-        { name: 'Censurada 4', url: 'images/cencura/cencura (4).png' },
-        { name: 'Censurada 5', url: 'images/cencura/cencura (5).png' },
-        { name: 'Censurada 6', url: 'images/cencura/cencura (6).png' },
-        { name: 'Censurada 7', url: 'images/cencura/cencura (7).png' },
-        { name: 'Censurada 8', url: 'images/cencura/cencura (8).png' },
-        { name: 'Censurada 9', url: 'images/cencura/cencura (9).png' },
-        { name: 'Censurada 10', url: 'images/cencura/cencura (10).png' },
-        { name: 'Censurada 11', url: 'images/cencura/cencura (11).png' },
-        { name: 'Censurada 12', url: 'images/cencura/cencura (12).png' },
-        { name: 'Censurada 13', url: 'images/cencura/cencura (13).png' },
-        { name: 'Censurada 14', url: 'images/cencura/cencura (14).png' },
-        { name: 'Censurada 15', url: 'images/cencura/cencura (15).png' },
-        { name: 'Censurada 16', url: 'images/cencura/cencura (16).png' },
-        { name: 'Censurada 17', url: 'images/cencura/cencura (17).png' },
-        { name: 'Censurada 18', url: 'images/cencura/cencura (18).png' },
-        { name: 'Censurada 19', url: 'images/cencura/cencura (19).png' },
-        { name: 'Censurada 20', url: 'images/cencura/cencura (20).png' },   
-        { name: 'Censurada 21', url: 'images/cencura/cencura (21).png' },
-        { name: 'Censurada 22', url: 'images/cencura/cencura (22).png' },
-        { name: 'Censurada 23', url: 'images/cencura/cencura (23).png' },
-        { name: 'Censurada 24', url: 'images/cencura/cencura (24).png' },
-        { name: 'Censurada 25', url: 'images/cencura/cencura (25).png' },
-        { name: 'Censurada 26', url: 'images/cencura/cencura (26).png' },
-        { name: 'Censurada 27', url: 'images/cencura/cencura (27).png' },
-        { name: 'Censurada 28', url: 'images/cencura/cencura (28).png' },
-        { name: 'Censurada 29', url: 'images/cencura/cencura (29).png' },
-        { name: 'Censurada 30', url: 'images/cencura/cencura (30).png' },
-        { name: 'Censurada 31', url: 'images/cencura/cencura (31).png' },
-        { name: 'Censurada 32', url: 'images/cencura/cencura (32).png' },
-        { name: 'Censurada 33', url: 'images/cencura/cencura (33).png' },
-        { name: 'Censurada 34', url: 'images/cencura/cencura (34).png' },
-        { name: 'Censurada 35', url: 'images/cencura/cencura (35).png' },
-        { name: 'Censurada 36', url: 'images/cencura/cencura (36).png' },
-        { name: 'Censurada 37', url: 'images/cencura/cencura (37).png' },
-        { name: 'Censurada 38', url: 'images/cencura/cencura (38).png' },
-        { name: 'Censurada 39', url: 'images/cencura/cencura (39).png' },
-        { name: 'Censurada 40', url: 'images/cencura/cencura (40).png' },
-        { name: 'Censurada 41', url: 'images/cencura/cencura (41).png' },
-        { name: 'Censurada 42', url: 'images/cencura/cencura (42).png' },
-        { name: 'Censurada 43', url: 'images/cencura/cencura (43).png' },
-        { name: 'Censurada 44', url: 'images/cencura/cencura (44).png' },
-        { name: 'Censurada 45', url: 'images/cencura/cencura (45).png' },
-        { name: 'Censurada 46', url: 'images/cencura/cencura (46).png' },
-        { name: 'Censurada 47', url: 'images/cencura/cencura (47).png' },
-        { name: 'Censurada 48', url: 'images/cencura/cencura (48).png' },
-        { name: 'Censurada 49', url: 'images/cencura/cencura (49).png' },
-        { name: 'Censurada 50', url: 'images/cencura/cencura (50).png' },
-        { name: 'Censurada 51', url: 'images/cencura/cencura (51).png' },
-        { name: 'Censurada 52', url: 'images/cencura/cencura (52).png' },
-        { name: 'Censurada 53', url: 'images/cencura/cencura (53).png' },
-        { name: 'Censurada 54', url: 'images/cencura/cencura (54).png' },
-        { name: 'Censurada 55', url: 'images/cencura/cencura (55).png' },
-        { name: 'Censurada 56', url: 'images/cencura/cencura (56).png' },
-        { name: 'Censurada 57', url: 'images/cencura/cencura (57).png' },
-        { name: 'Censurada 58', url: 'images/cencura/cencura (58).png' },
-        { name: 'Censurada 59', url: 'images/cencura/cencura (59).png' },
-        { name: 'Censurada 60', url: 'images/cencura/cencura (60).png' },
-        { name: 'Censurada 61', url: 'images/cencura/cencura (61).png' },
-        { name: 'Censurada 62', url: 'images/cencura/cencura (62).png' },
-        { name: 'Censurada 63', url: 'images/cencura/cencura (63).png' },
-        { name: 'Censurada 64', url: 'images/cencura/cencura (64).png' },
-        { name: 'Censurada 65', url: 'images/cencura/cencura (65).png' },
-        { name: 'Censurada 66', url: 'images/cencura/cencura (66).png' },
-        { name: 'Censurada 67', url: 'images/cencura/cencura (67).png' },
-        { name: 'Censurada 68', url: 'images/cencura/cencura (68).png' },
-        { name: 'Censurada 69', url: 'images/cencura/cencura (69).png' },
-        { name: 'Censurada 70', url: 'images/cencura/cencura (70).png' },
-        { name: 'Censurada 71', url: 'images/cencura/cencura (71).png' },
-        { name: 'Censurada 72', url: 'images/cencura/cencura (72).png' },
-        { name: 'Censurada 73', url: 'images/cencura/cencura (73).png' },
-        { name: 'Censurada 74', url: 'images/cencura/cencura (74).png' },
-        { name: 'Censurada 75', url: 'images/cencura/cencura (75).png' },
-        { name: 'Censurada 76', url: 'images/cencura/cencura (76).png' },
-        { name: 'Censurada 77', url: 'images/cencura/cencura (77).png' },
-        { name: 'Censurada 78', url: 'images/cencura/cencura (78).png' },
-        { name: 'Censurada 79', url: 'images/cencura/cencura (79).png' },
-        { name: 'Censurada 80', url: 'images/cencura/cencura (80).png' },
-        { name: 'Censurada 81', url: 'images/cencura/cencura (81).png' },
-        { name: 'Censurada 82', url: 'images/cencura/cencura (82).png' },
-        { name: 'Censurada 83', url: 'images/cencura/cencura (83).png' },
-        { name: 'Censurada 84', url: 'images/cencura/cencura (84).png' },
-        { name: 'Censurada 85', url: 'images/cencura/cencura (85).png' },
-        { name: 'Censurada 86', url: 'images/cencura/cencura (86).png' },
-        { name: 'Censurada 87', url: 'images/cencura/cencura (87).png' },
-        { name: 'Censurada 88', url: 'images/cencura/cencura (88).png' },
-        { name: 'Censurada 89', url: 'images/cencura/cencura (89).png' },
-        { name: 'Censurada 90', url: 'images/cencura/cencura (90).png' },
-        { name: 'Censurada 91', url: 'images/cencura/cencura (91).png' },
-        { name: 'Censurada 92', url: 'images/cencura/cencura (92).png' },
-        { name: 'Censurada 93', url: 'images/cencura/cencura (93).png' },
-        { name: 'Censurada 94', url: 'images/cencura/cencura (94).png' },
-        { name: 'Censurada 95', url: 'images/cencura/cencura (95).png' },
-        { name: 'Censurada 96', url: 'images/cencura/cencura (96).png' },
-        { name: 'Censurada 97', url: 'images/cencura/cencura (97).png' },
-        { name: 'Censurada 98', url: 'images/cencura/cencura (98).png' },
-        { name: 'Censurada 99', url: 'images/cencura/cencura (99).png' },
-        { name: 'Censurada 100', url: 'images/cencura/cencura (100).png' },
-        { name: 'Censurada 101', url: 'images/cencura/cencura (101).png' },
-        { name: 'Censurada 102', url: 'images/cencura/cencura (102).png' },
-        { name: 'Censurada 103', url: 'images/cencura/cencura (103).png' },
-        { name: 'Censurada 104', url: 'images/cencura/cencura (104).png' },
-        { name: 'Censurada 105', url: 'images/cencura/cencura (105).png' },
-        { name: 'Censurada 106', url: 'images/cencura/cencura (106).png' },
-        { name: 'Censurada 107', url: 'images/cencura/cencura (107).png' },
-        { name: 'Censurada 108', url: 'images/cencura/cencura (108).png' },
-        { name: 'Censurada 109', url: 'images/cencura/cencura (109).png' },
-        { name: 'Censurada 110', url: 'images/cencura/cencura (110).png' },
-        { name: 'Censurada 111', url: 'images/cencura/cencura (111).png' },
-        { name: 'Censurada 112', url: 'images/cencura/cencura (112).png' },
-        { name: 'Censurada 113', url: 'images/cencura/cencura (113).png' },
-        { name: 'Censurada 114', url: 'images/cencura/cencura (114).png' },
-        { name: 'Censurada 115', url: 'images/cencura/cencura (115).png' }
+// Función para inicializar la configuración
+async function inicializarConfiguracion() {
+    try {
+        // Configurar imágenes en paralelo
+        const promesasCategorias = CONFIG.categories.map(categoria => 
+            crearArrayImagenes(categoria, CONFIG.maxImagesPerCategory).then(imagenes => {
+                imageConfig[categoria] = imagenes;
+            })
+        );
 
-    ],
-    'centauro': [
-        { name: 'Centauro 1', url: 'images/centauro/centauro (1).png' },
-        { name: 'Centauro 2', url: 'images/centauro/centauro (2).png' },
-        { name: 'Centauro 3', url: 'images/centauro/centauro (3).png' },
-        { name: 'Centauro 4', url: 'images/centauro/centauro (4).png' },
-        { name: 'Centauro 5', url: 'images/centauro/centauro (5).png' },
-        { name: 'Centauro 6', url: 'images/centauro/centauro (6).png' },
-        { name: 'Centauro 7', url: 'images/centauro/centauro (7).png' },
-        { name: 'Centauro 8', url: 'images/centauro/centauro (8).png' },
-        { name: 'Centauro 9', url: 'images/centauro/centauro (9).png' },
-        { name: 'Centauro 10', url: 'images/centauro/centauro (10).png' }
+        // Configurar videos
+        Object.entries(CONFIG.videoCategories).forEach(([categoria, config]) => {
+            imageConfig[categoria] = Array.from({length: config.count}, (_, i) => ({
+                name: `${categoria.charAt(0).toUpperCase() + categoria.slice(1)} ${i + 1}`,
+                url: `${CONFIG.basePaths.videos}${config.path} (${i + 1}).mp4`
+            }));
+        });
 
-    ],
-    'chibi': [
-        { name: 'Chibi 1', url: 'images/chibi/chibi (1).png' },
-        { name: 'Chibi 2', url: 'images/chibi/chibi (2).png' },
-        { name: 'Chibi 3', url: 'images/chibi/chibi (3).png' },
-        { name: 'Chibi 4', url: 'images/chibi/chibi (4).png' },
-        { name: 'Chibi 5', url: 'images/chibi/chibi (5).png' },
-        { name: 'Chibi 6', url: 'images/chibi/chibi (6).png' },
-        { name: 'Chibi 7', url: 'images/chibi/chibi (7).png' },
-        { name: 'Chibi 8', url: 'images/chibi/chibi (8).png' },
-        { name: 'Chibi 9', url: 'images/chibi/chibi (9).png' },
-        { name: 'Chibi 10', url: 'images/chibi/chibi (10).png' },
-        { name: 'Chibi 11', url: 'images/chibi/chibi (11).png' },
-        { name: 'Chibi 12', url: 'images/chibi/chibi (12).png' },
-        { name: 'Chibi 13', url: 'images/chibi/chibi (13).png' },
-        { name: 'Chibi 14', url: 'images/chibi/chibi (14).png' },
-        { name: 'Chibi 15', url: 'images/chibi/chibi (15).png' },
-        { name: 'Chibi 16', url: 'images/chibi/chibi (16).png' },
-        { name: 'Chibi 17', url: 'images/chibi/chibi (17).png' },
-        { name: 'Chibi 18', url: 'images/chibi/chibi (18).png' },
-        { name: 'Chibi 19', url: 'images/chibi/chibi (19).png' },
-        { name: 'Chibi 20', url: 'images/chibi/chibi (20).png' },
-        { name: 'Chibi 21', url: 'images/chibi/chibi (21).png' },
-        { name: 'Chibi 22', url: 'images/chibi/chibi (22).png' },
-        { name: 'Chibi 23', url: 'images/chibi/chibi (23).png' },
-        { name: 'Chibi 24', url: 'images/chibi/chibi (24).png' },
-        { name: 'Chibi 25', url: 'images/chibi/chibi (25).png' },
-        { name: 'Chibi 26', url: 'images/chibi/chibi (26).png' },
+        await Promise.all(promesasCategorias);
+        actualizarDestacadas();
 
-    ],
-    'desgarada': [
-        { name: 'desgarada 1', url: 'images/desgarada/desgarada (1).png' },
-        { name: 'desgarada 2', url: 'images/desgarada/desgarada (2).png' },
-        { name: 'desgarada 3', url: 'images/desgarada/desgarada (3).png' },
-        { name: 'desgarada 4', url: 'images/desgarada/desgarada (4).png' },
-        { name: 'desgarada 5', url: 'images/desgarada/desgarada (5).png' },
-        { name: 'desgarada 6', url: 'images/desgarada/desgarada (6).png' }
+        console.log('Configuración cargada exitosamente');
+    } catch (error) {
+        console.error('Error al inicializar la configuración:', error);
+    }
+}
 
-    ],
-    'furry': [
-        { name: 'furry 1', url: 'images/furry/furry (1).png' },
-        { name: 'furry 2', url: 'images/furry/furry (2).png' },
-        { name: 'furry 3', url: 'images/furry/furry (3).png' },
-        { name: 'furry 4', url: 'images/furry/furry (4).png' },
-        { name: 'furry 5', url: 'images/furry/furry (5).png' },
-        { name: 'furry 6', url: 'images/furry/furry (6).png' },
-        { name: 'furry 7', url: 'images/furry/furry (7).png' },
-        { name: 'furry 8', url: 'images/furry/furry (8).png' }
+// Inicializar la configuración
+inicializarConfiguracion();
 
-    ],
-    'gotica': [
-        { name: 'Gótica 1', url: 'images/gotica/gotica (1).png' },
-        { name: 'Gótica 2', url: 'images/gotica/gotica (2).png' },
-        { name: 'Gótica 3', url: 'images/gotica/gotica (3).png' },
-        { name: 'Gótica 4', url: 'images/gotica/gotica (4).png' },
-        { name: 'Gótica 5', url: 'images/gotica/gotica (5).png' },
-        { name: 'Gótica 6', url: 'images/gotica/gotica (6).png' },
-        { name: 'Gótica 7', url: 'images/gotica/gotica (7).png' },
-        { name: 'Gótica 8', url: 'images/gotica/gotica (8).png' },
-        { name: 'Gótica 9', url: 'images/gotica/gotica (9).png' },
-        { name: 'Gótica 10', url: 'images/gotica/gotica (10).png' },
-        { name: 'Gótica 11', url: 'images/gotica/gotica (11).png' },
-        { name: 'Gótica 12', url: 'images/gotica/gotica (12).png' },
-        { name: 'Gótica 13', url: 'images/gotica/gotica (13).png' },
-        { name: 'Gótica 14', url: 'images/gotica/gotica (14).png' },
-        { name: 'Gótica 15', url: 'images/gotica/gotica (15).png' },
-        { name: 'Gótica 16', url: 'images/gotica/gotica (16).png' },
-        { name: 'Gótica 17', url: 'images/gotica/gotica (17).png' },
-        { name: 'Gótica 18', url: 'images/gotica/gotica (18).png' },
-        { name: 'Gótica 19', url: 'images/gotica/gotica (19).png' },
-        { name: 'Gótica 20', url: 'images/gotica/gotica (20).png' },
-        { name: 'Gótica 21', url: 'images/gotica/gotica (21).png' },
-        { name: 'Gótica 22', url: 'images/gotica/gotica (22).png' },
-        { name: 'Gótica 23', url: 'images/gotica/gotica (23).png' },
-        { name: 'Gótica 24', url: 'images/gotica/gotica (24).png' },
-        { name: 'Gótica 25', url: 'images/gotica/gotica (25).png' },
-        { name: 'Gótica 26', url: 'images/gotica/gotica (26).png' },
-        { name: 'Gótica 27', url: 'images/gotica/gotica (27).png' },
-        { name: 'Gótica 28', url: 'images/gotica/gotica (28).png' },
-        { name: 'Gótica 29', url: 'images/gotica/gotica (29).png' },
-        { name: 'Gótica 30', url: 'images/gotica/gotica (30).png' },
-        { name: 'Gótica 31', url: 'images/gotica/gotica (31).png' },
-        { name: 'Gótica 32', url: 'images/gotica/gotica (32).png' },
-        { name: 'Gótica 33', url: 'images/gotica/gotica (33).png' },
-        { name: 'Gótica 34', url: 'images/gotica/gotica (34).png' },
-        { name: 'Gótica 35', url: 'images/gotica/gotica (35).png' },
-        { name: 'Gótica 36', url: 'images/gotica/gotica (36).png' },
-        { name: 'Gótica 37', url: 'images/gotica/gotica (37).png' },
-        { name: 'Gótica 38', url: 'images/gotica/gotica (38).png' },
-        { name: 'Gótica 39', url: 'images/gotica/gotica (39).png' },
-        { name: 'Gótica 40', url: 'images/gotica/gotica (40).png' },
-        { name: 'Gótica 41', url: 'images/gotica/gotica (41).png' },
-        { name: 'Gótica 42', url: 'images/gotica/gotica (42).png' }
-
-    ],
-    'milf': [
-        { name: 'Milf 1', url: 'images/milf/milf (1).png' },
-        { name: 'Milf 2', url: 'images/milf/milf (2).png' },
-        { name: 'Milf 3', url: 'images/milf/milf (3).png' },
-        { name: 'Milf 4', url: 'images/milf/milf (4).png' },
-        { name: 'Milf 5', url: 'images/milf/milf (5).png' },
-        { name: 'Milf 6', url: 'images/milf/milf (6).png' },
-        { name: 'Milf 7', url: 'images/milf/milf (7).png' },
-        { name: 'Milf 8', url: 'images/milf/milf (8).png' },
-        { name: 'Milf 9', url: 'images/milf/milf (9).png' },
-        { name: 'Milf 10', url: 'images/milf/milf (10).png' },
-        { name: 'Milf 11', url: 'images/milf/milf (11).png' },
-        { name: 'Milf 12', url: 'images/milf/milf (12).png' },
-        { name: 'Milf 13', url: 'images/milf/milf (13).png' },
-        { name: 'Milf 14', url: 'images/milf/milf (14).png' },
-        { name: 'Milf 15', url: 'images/milf/milf (15).png' },
-        { name: 'Milf 16', url: 'images/milf/milf (16).png' },
-        { name: 'Milf 17', url: 'images/milf/milf (17).png' },
-        { name: 'Milf 18', url: 'images/milf/milf (18).png' },
-        { name: 'Milf 19', url: 'images/milf/milf (19).png' },
-        { name: 'Milf 20', url: 'images/milf/milf (20).png' },
-        { name: 'Milf 21', url: 'images/milf/milf (21).png' },
-        { name: 'Milf 22', url: 'images/milf/milf (22).png' },
-        { name: 'Milf 23', url: 'images/milf/milf (23).png' },
-        { name: 'Milf 24', url: 'images/milf/milf (24).png' },
-        { name: 'Milf 25', url: 'images/milf/milf (25).png' },
-        { name: 'Milf 26', url: 'images/milf/milf (26).png' },
-        { name: 'Milf 27', url: 'images/milf/milf (27).png' },
-        { name: 'Milf 28', url: 'images/milf/milf (28).png' },
-        { name: 'Milf 29', url: 'images/milf/milf (29).png' },
-        { name: 'Milf 30', url: 'images/milf/milf (30).png' },
-        { name: 'Milf 31', url: 'images/milf/milf (31).png' },
-        { name: 'Milf 32', url: 'images/milf/milf (32).png' },
-        { name: 'Milf 33', url: 'images/milf/milf (33).png' },
-        { name: 'Milf 34', url: 'images/milf/milf (34).png' },
-        { name: 'Milf 35', url: 'images/milf/milf (35).png' },
-        { name: 'Milf 36', url: 'images/milf/milf (36).png' },
-        { name: 'Milf 37', url: 'images/milf/milf (37).png' },
-        { name: 'Milf 38', url: 'images/milf/milf (38).png' },
-        { name: 'Milf 39', url: 'images/milf/milf (39).png' },
-        { name: 'Milf 40', url: 'images/milf/milf (40).png' },
-        { name: 'Milf 41', url: 'images/milf/milf (41).png' },
-        { name: 'Milf 42', url: 'images/milf/milf (42).png' },
-        { name: 'Milf 43', url: 'images/milf/milf (43).png' },
-        { name: 'Milf 44', url: 'images/milf/milf (44).png' },
-        { name: 'Milf 45', url: 'images/milf/milf (45).png' },
-        { name: 'Milf 46', url: 'images/milf/milf (46).png' },
-        { name: 'Milf 47', url: 'images/milf/milf (47).png' },
-        { name: 'Milf 48', url: 'images/milf/milf (48).png' },
-        { name: 'Milf 49', url: 'images/milf/milf (49).png' },
-        { name: 'Milf 50', url: 'images/milf/milf (50).png' },
-        { name: 'Milf 51', url: 'images/milf/milf (51).png' },
-        { name: 'Milf 52', url: 'images/milf/milf (52).png' },
-        { name: 'Milf 53', url: 'images/milf/milf (53).png' },
-        { name: 'Milf 54', url: 'images/milf/milf (54).png' },
-        { name: 'Milf 55', url: 'images/milf/milf (55).png' },
-        { name: 'Milf 56', url: 'images/milf/milf (56).png' },
-        { name: 'Milf 57', url: 'images/milf/milf (57).png' },
-        { name: 'Milf 58', url: 'images/milf/milf (58).png' },
-        { name: 'Milf 59', url: 'images/milf/milf (59).png' },
-        { name: 'Milf 60', url: 'images/milf/milf (60).png' }
-
-    ],
-    'morena': [
-        { name: 'Morena 1', url: 'images/morena/morena (1).png' },
-        { name: 'Morena 2', url: 'images/morena/morena (2).png' }
-
-    ],
-    'terror': [
-        { name: 'terror 1', url: 'images/terror/terror (1).png' },
-        { name: 'terror 2', url: 'images/terror/terror (2).png' },
-        { name: 'terror 3', url: 'images/terror/terror (3).png' },
-        { name: 'terror 4', url: 'images/terror/terror (4).png' },
-        { name: 'terror 5', url: 'images/terror/terror (5).png' },
-        { name: 'terror 6', url: 'images/terror/terror (6).png' }
-
-    ],
-    'trabajo': [
-        { name: 'trabajo 1', url: 'images/trabajo/trabajo (1).png' },
-        { name: 'trabajo 2', url: 'images/trabajo/trabajo (2).png' },
-        { name: 'trabajo 3', url: 'images/trabajo/trabajo (3).png' },
-        { name: 'trabajo 4', url: 'images/trabajo/trabajo (4).png' },
-        { name: 'trabajo 5', url: 'images/trabajo/trabajo (5).png' },
-        { name: 'trabajo 6', url: 'images/trabajo/trabajo (6).png' },
-        { name: 'trabajo 7', url: 'images/trabajo/trabajo (7).png' },
-        { name: 'trabajo 8', url: 'images/trabajo/trabajo (8).png' },
-        { name: 'trabajo 9', url: 'images/trabajo/trabajo (9).png' },
-        { name: 'trabajo 10', url: 'images/trabajo/trabajo (10).png' },
-        { name: 'trabajo 11', url: 'images/trabajo/trabajo (11).png' },
-        { name: 'trabajo 12', url: 'images/trabajo/trabajo (12).png' },
-        { name: 'trabajo 13', url: 'images/trabajo/trabajo (13).png' },
-        { name: 'trabajo 14', url: 'images/trabajo/trabajo (14).png' },
-        { name: 'trabajo 15', url: 'images/trabajo/trabajo (15).png' },
-        { name: 'trabajo 16', url: 'images/trabajo/trabajo (16).png' },
-        { name: 'trabajo 17', url: 'images/trabajo/trabajo (17).png' },
-        { name: 'trabajo 18', url: 'images/trabajo/trabajo (18).png' },
-        { name: 'trabajo 19', url: 'images/trabajo/trabajo (19).png' },
-        { name: 'trabajo 20', url: 'images/trabajo/trabajo (20).png' },
-        { name: 'trabajo 21', url: 'images/trabajo/trabajo (21).png' },
-        { name: 'trabajo 22', url: 'images/trabajo/trabajo (22).png' },
-        { name: 'trabajo 23', url: 'images/trabajo/trabajo (23).png' },
-        { name: 'trabajo 24', url: 'images/trabajo/trabajo (24).png' },
-        { name: 'trabajo 25', url: 'images/trabajo/trabajo (25).png' },
-        { name: 'trabajo 26', url: 'images/trabajo/trabajo (26).png' },
-        { name: 'trabajo 27', url: 'images/trabajo/trabajo (27).png' },
-        { name: 'trabajo 28', url: 'images/trabajo/trabajo (28).png' },
-        { name: 'trabajo 29', url: 'images/trabajo/trabajo (29).png' },
-        { name: 'trabajo 30', url: 'images/trabajo/trabajo (30).png' },
-        { name: 'trabajo 31', url: 'images/trabajo/trabajo (31).png' },
-        { name: 'trabajo 32', url: 'images/trabajo/trabajo (32).png' },
-        { name: 'trabajo 33', url: 'images/trabajo/trabajo (33).png' },
-        { name: 'trabajo 34', url: 'images/trabajo/trabajo (34).png' },
-        { name: 'trabajo 35', url: 'images/trabajo/trabajo (35).png' },
-        { name: 'trabajo 36', url: 'images/trabajo/trabajo (36).png' },
-        { name: 'trabajo 37', url: 'images/trabajo/trabajo (37).png' },
-        { name: 'trabajo 38', url: 'images/trabajo/trabajo (38).png' },
-        { name: 'trabajo 39', url: 'images/trabajo/trabajo (39).png' },
-        { name: 'trabajo 40', url: 'images/trabajo/trabajo (40).png' },
-        { name: 'trabajo 41', url: 'images/trabajo/trabajo (41).png' },
-        { name: 'trabajo 42', url: 'images/trabajo/trabajo (42).png' },
-        { name: 'trabajo 43', url: 'images/trabajo/trabajo (43).png' },
-        { name: 'trabajo 44', url: 'images/trabajo/trabajo (44).png' },
-        { name: 'trabajo 45', url: 'images/trabajo/trabajo (45).png' },
-        { name: 'trabajo 46', url: 'images/trabajo/trabajo (46).png' },
-        { name: 'trabajo 47', url: 'images/trabajo/trabajo (47).png' },
-        { name: 'trabajo 48', url: 'images/trabajo/trabajo (48).png' },
-        { name: 'trabajo 49', url: 'images/trabajo/trabajo (49).png' },
-        { name: 'trabajo 50', url: 'images/trabajo/trabajo (50).png' },
-        { name: 'trabajo 51', url: 'images/trabajo/trabajo (51).png' },
-        { name: 'trabajo 52', url: 'images/trabajo/trabajo (52).png' },
-        { name: 'trabajo 53', url: 'images/trabajo/trabajo (53).png' },
-        { name: 'trabajo 54', url: 'images/trabajo/trabajo (54).png' },
-        { name: 'trabajo 55', url: 'images/trabajo/trabajo (55).png' },
-        { name: 'trabajo 56', url: 'images/trabajo/trabajo (56).png' },
-        { name: 'trabajo 57', url: 'images/trabajo/trabajo (57).png' },
-        { name: 'trabajo 58', url: 'images/trabajo/trabajo (58).png' },
-        { name: 'trabajo 59', url: 'images/trabajo/trabajo (59).png' },
-        { name: 'trabajo 60', url: 'images/trabajo/trabajo (60).png' },
-        { name: 'trabajo 61', url: 'images/trabajo/trabajo (61).png' },
-        { name: 'trabajo 62', url: 'images/trabajo/trabajo (62).png' },
-        { name: 'trabajo 63', url: 'images/trabajo/trabajo (63).png' },
-        { name: 'trabajo 64', url: 'images/trabajo/trabajo (64).png' },
-        { name: 'trabajo 65', url: 'images/trabajo/trabajo (65).png' },
-        { name: 'trabajo 66', url: 'images/trabajo/trabajo (66).png' },
-        { name: 'trabajo 67', url: 'images/trabajo/trabajo (67).png' },
-        { name: 'trabajo 68', url: 'images/trabajo/trabajo (68).png' },
-        { name: 'trabajo 69', url: 'images/trabajo/trabajo (69).png' },
-        { name: 'trabajo 70', url: 'images/trabajo/trabajo (70).png' },
-        { name: 'trabajo 71', url: 'images/trabajo/trabajo (71).png' },
-        { name: 'trabajo 72', url: 'images/trabajo/trabajo (72).png' }
-
-    ],
-    'vampira': [
-        { name: 'Vampira 1', url: 'images/vampira/vampira (1).png' },
-        { name: 'Vampira 2', url: 'images/vampira/vampira (2).png' },
-        { name: 'Vampira 3', url: 'images/vampira/vampira (3).png' },
-        { name: 'Vampira 4', url: 'images/vampira/vampira (4).png' },
-        { name: 'Vampira 5', url: 'images/vampira/vampira (5).png' },
-        { name: 'Vampira 6', url: 'images/vampira/vampira (6).png' },
-        { name: 'Vampira 7', url: 'images/vampira/vampira (7).png' },
-        { name: 'Vampira 8', url: 'images/vampira/vampira (8).png' },
-        { name: 'Vampira 9', url: 'images/vampira/vampira (9).png' },
-        { name: 'Vampira 10', url: 'images/vampira/vampira (10).png' },
-        { name: 'Vampira 11', url: 'images/vampira/vampira (11).png' },
-        { name: 'Vampira 12', url: 'images/vampira/vampira (12).png' },
-        { name: 'Vampira 13', url: 'images/vampira/vampira (13).png' },
-        { name: 'Vampira 14', url: 'images/vampira/vampira (14).png' },
-        { name: 'Vampira 15', url: 'images/vampira/vampira (15).png' },
-        { name: 'Vampira 16', url: 'images/vampira/vampira (16).png' },
-        { name: 'Vampira 17', url: 'images/vampira/vampira (17).png' },
-        { name: 'Vampira 18', url: 'images/vampira/vampira (18).png' },
-        { name: 'Vampira 19', url: 'images/vampira/vampira (19).png' },
-        { name: 'Vampira 20', url: 'images/vampira/vampira (20).png' },
-        { name: 'Vampira 21', url: 'images/vampira/vampira (21).png' },
-        { name: 'Vampira 22', url: 'images/vampira/vampira (22).png' },
-        { name: 'Vampira 23', url: 'images/vampira/vampira (23).png' },
-        { name: 'Vampira 24', url: 'images/vampira/vampira (24).png' },
-        { name: 'Vampira 25', url: 'images/vampira/vampira (25).png' },
-        { name: 'Vampira 26', url: 'images/vampira/vampira (26).png' },
-        { name: 'Vampira 27', url: 'images/vampira/vampira (27).png' },
-        { name: 'Vampira 28', url: 'images/vampira/vampira (28).png' },
-        { name: 'Vampira 29', url: 'images/vampira/vampira (29).png' },
-        { name: 'Vampira 30', url: 'images/vampira/vampira (30).png' },
-        { name: 'Vampira 31', url: 'images/vampira/vampira (31).png' },
-        { name: 'Vampira 32', url: 'images/vampira/vampira (32).png' },
-        { name: 'Vampira 33', url: 'images/vampira/vampira (33).png' },
-        { name: 'Vampira 34', url: 'images/vampira/vampira (34).png' },
-        { name: 'Vampira 35', url: 'images/vampira/vampira (35).png' },
-        { name: 'Vampira 36', url: 'images/vampira/vampira (36).png' },
-        { name: 'Vampira 37', url: 'images/vampira/vampira (37).png' },
-        { name: 'Vampira 38', url: 'images/vampira/vampira (38).png' },
-        { name: 'Vampira 39', url: 'images/vampira/vampira (39).png' },
-        { name: 'Vampira 40', url: 'images/vampira/vampira (40).png' },
-        { name: 'Vampira 41', url: 'images/vampira/vampira (41).png' },
-        { name: 'Vampira 42', url: 'images/vampira/vampira (42).png' },
-        { name: 'Vampira 43', url: 'images/vampira/vampira (43).png' },
-        { name: 'Vampira 44', url: 'images/vampira/vampira (44).png' },
-        { name: 'Vampira 45', url: 'images/vampira/vampira (45).png' },
-        { name: 'Vampira 46', url: 'images/vampira/vampira (46).png' },
-        { name: 'Vampira 47', url: 'images/vampira/vampira (47).png' },
-        { name: 'Vampira 48', url: 'images/vampira/vampira (48).png' },
-        { name: 'Vampira 49', url: 'images/vampira/vampira (49).png' },
-        { name: 'Vampira 50', url: 'images/vampira/vampira (50).png' }
-
-    ],
-    'vanilla': [
-        { name: 'Vanilla 1', url: 'images/vanilla/vanilla (1).png' },
-        { name: 'Vanilla 2', url: 'images/vanilla/vanilla (2).png' },
-        { name: 'Vanilla 3', url: 'images/vanilla/vanilla (3).png' },
-        { name: 'Vanilla 4', url: 'images/vanilla/vanilla (4).png' },
-        { name: 'Vanilla 5', url: 'images/vanilla/vanilla (5).png' },
-        { name: 'Vanilla 6', url: 'images/vanilla/vanilla (6).png' },
-        { name: 'Vanilla 7', url: 'images/vanilla/vanilla (7).png' },
-        { name: 'Vanilla 8', url: 'images/vanilla/vanilla (8).png' },
-        { name: 'Vanilla 9', url: 'images/vanilla/vanilla (9).png' },
-        { name: 'Vanilla 10', url: 'images/vanilla/vanilla (10).png' },
-        { name: 'Vanilla 11', url: 'images/vanilla/vanilla (11).png' },
-        { name: 'Vanilla 12', url: 'images/vanilla/vanilla (12).png' },
-        { name: 'Vanilla 13', url: 'images/vanilla/vanilla (13).png' },
-        { name: 'Vanilla 14', url: 'images/vanilla/vanilla (14).png' },
-        { name: 'Vanilla 15', url: 'images/vanilla/vanilla (15).png' },
-        { name: 'Vanilla 16', url: 'images/vanilla/vanilla (16).png' },
-        { name: 'Vanilla 17', url: 'images/vanilla/vanilla (17).png' },
-        { name: 'Vanilla 18', url: 'images/vanilla/vanilla (18).png' },
-        { name: 'Vanilla 19', url: 'images/vanilla/vanilla (19).png' },
-        { name: 'Vanilla 20', url: 'images/vanilla/vanilla (20).png' },
-        { name: 'Vanilla 21', url: 'images/vanilla/vanilla (21).png' },
-        { name: 'Vanilla 22', url: 'images/vanilla/vanilla (22).png' },
-        { name: 'Vanilla 23', url: 'images/vanilla/vanilla (23).png' },
-        { name: 'Vanilla 24', url: 'images/vanilla/vanilla (24).png' },
-        { name: 'Vanilla 25', url: 'images/vanilla/vanilla (25).png' },
-        { name: 'Vanilla 26', url: 'images/vanilla/vanilla (26).png' },
-        { name: 'Vanilla 27', url: 'images/vanilla/vanilla (27).png' },
-        { name: 'Vanilla 28', url: 'images/vanilla/vanilla (28).png' },
-        { name: 'Vanilla 29', url: 'images/vanilla/vanilla (29).png' },
-        { name: 'Vanilla 30', url: 'images/vanilla/vanilla (30).png' },
-        { name: 'Vanilla 31', url: 'images/vanilla/vanilla (31).png' },
-        { name: 'Vanilla 32', url: 'images/vanilla/vanilla (32).png' },
-        { name: 'Vanilla 33', url: 'images/vanilla/vanilla (33).png' },
-        { name: 'Vanilla 34', url: 'images/vanilla/vanilla (34).png' },
-        { name: 'Vanilla 35', url: 'images/vanilla/vanilla (35).png' },
-        { name: 'Vanilla 36', url: 'images/vanilla/vanilla (36).png' },
-        { name: 'Vanilla 37', url: 'images/vanilla/vanilla (37).png' },
-        { name: 'Vanilla 38', url: 'images/vanilla/vanilla (38).png' },
-        { name: 'Vanilla 39', url: 'images/vanilla/vanilla (39).png' },
-        { name: 'Vanilla 40', url: 'images/vanilla/vanilla (40).png' },
-        { name: 'Vanilla 41', url: 'images/vanilla/vanilla (41).png' },
-        { name: 'Vanilla 42', url: 'images/vanilla/vanilla (42).png' },
-        { name: 'Vanilla 43', url: 'images/vanilla/vanilla (43).png' },
-        { name: 'Vanilla 44', url: 'images/vanilla/vanilla (44).png' },
-        { name: 'Vanilla 45', url: 'images/vanilla/vanilla (45).png' },
-        { name: 'Vanilla 46', url: 'images/vanilla/vanilla (46).png' },
-        { name: 'Vanilla 47', url: 'images/vanilla/vanilla (47).png' },
-        { name: 'Vanilla 48', url: 'images/vanilla/vanilla (48).png' },
-        { name: 'Vanilla 49', url: 'images/vanilla/vanilla (49).png' },
-        { name: 'Vanilla 50', url: 'images/vanilla/vanilla (50).png' },
-        { name: 'Vanilla 51', url: 'images/vanilla/vanilla (51).png' },
-        { name: 'Vanilla 52', url: 'images/vanilla/vanilla (52).png' },
-        { name: 'Vanilla 53', url: 'images/vanilla/vanilla (53).png' },
-        { name: 'Vanilla 54', url: 'images/vanilla/vanilla (54).png' },
-        { name: 'Vanilla 55', url: 'images/vanilla/vanilla (55).png' },
-        { name: 'Vanilla 56', url: 'images/vanilla/vanilla (56).png' },
-        { name: 'Vanilla 57', url: 'images/vanilla/vanilla (57).png' },
-        { name: 'Vanilla 58', url: 'images/vanilla/vanilla (58).png' },
-        { name: 'Vanilla 59', url: 'images/vanilla/vanilla (59).png' },
-        { name: 'Vanilla 60', url: 'images/vanilla/vanilla (60).png' },
-        { name: 'Vanilla 61', url: 'images/vanilla/vanilla (61).png' },
-        { name: 'Vanilla 62', url: 'images/vanilla/vanilla (62).png' },
-        { name: 'Vanilla 63', url: 'images/vanilla/vanilla (63).png' },
-        { name: 'Vanilla 64', url: 'images/vanilla/vanilla (64).png' },
-        { name: 'Vanilla 65', url: 'images/vanilla/vanilla (65).png' },
-        { name: 'Vanilla 66', url: 'images/vanilla/vanilla (66).png' },
-        { name: 'Vanilla 67', url: 'images/vanilla/vanilla (67).png' },
-        { name: 'Vanilla 68', url: 'images/vanilla/vanilla (68).png' },
-        { name: 'Vanilla 69', url: 'images/vanilla/vanilla (69).png' },
-        { name: 'Vanilla 70', url: 'images/vanilla/vanilla (70).png' },
-        { name: 'Vanilla 71', url: 'images/vanilla/vanilla (71).png' },
-        { name: 'Vanilla 72', url: 'images/vanilla/vanilla (72).png' },
-        { name: 'Vanilla 73', url: 'images/vanilla/vanilla (73).png' },
-        { name: 'Vanilla 74', url: 'images/vanilla/vanilla (74).png' },
-        { name: 'Vanilla 75', url: 'images/vanilla/vanilla (75).png' },
-        { name: 'Vanilla 76', url: 'images/vanilla/vanilla (76).png' },
-        { name: 'Vanilla 77', url: 'images/vanilla/vanilla (77).png' },
-        { name: 'Vanilla 78', url: 'images/vanilla/vanilla (78).png' },
-        { name: 'Vanilla 79', url: 'images/vanilla/vanilla (79).png' },
-        { name: 'Vanilla 80', url: 'images/vanilla/vanilla (80).png' },
-        { name: 'Vanilla 81', url: 'images/vanilla/vanilla (81).png' },
-        { name: 'Vanilla 82', url: 'images/vanilla/vanilla (82).png' },
-        { name: 'Vanilla 83', url: 'images/vanilla/vanilla (83).png' },
-        { name: 'Vanilla 84', url: 'images/vanilla/vanilla (84).png' },
-        { name: 'Vanilla 85', url: 'images/vanilla/vanilla (85).png' },
-        { name: 'Vanilla 86', url: 'images/vanilla/vanilla (86).png' },
-        { name: 'Vanilla 87', url: 'images/vanilla/vanilla (87).png' },
-        { name: 'Vanilla 88', url: 'images/vanilla/vanilla (88).png' },
-        { name: 'Vanilla 89', url: 'images/vanilla/vanilla (89).png' },
-        { name: 'Vanilla 90', url: 'images/vanilla/vanilla (90).png' },
-        { name: 'Vanilla 91', url: 'images/vanilla/vanilla (91).png' },
-        { name: 'Vanilla 92', url: 'images/vanilla/vanilla (92).png' },
-        { name: 'Vanilla 93', url: 'images/vanilla/vanilla (93).png' },
-        { name: 'Vanilla 94', url: 'images/vanilla/vanilla (94).png' },
-        { name: 'Vanilla 95', url: 'images/vanilla/vanilla (95).png' },
-        { name: 'Vanilla 96', url: 'images/vanilla/vanilla (96).png' },
-        { name: 'Vanilla 97', url: 'images/vanilla/vanilla (97).png' },
-        { name: 'Vanilla 98', url: 'images/vanilla/vanilla (98).png' },
-        { name: 'Vanilla 99', url: 'images/vanilla/vanilla (99).png' },
-        { name: 'Vanilla 100', url: 'images/vanilla/vanilla (100).png' },
-        { name: 'Vanilla 101', url: 'images/vanilla/vanilla (101).png' },
-        { name: 'Vanilla 102', url: 'images/vanilla/vanilla (102).png' },
-        { name: 'Vanilla 103', url: 'images/vanilla/vanilla (103).png' },
-        { name: 'Vanilla 104', url: 'images/vanilla/vanilla (104).png' },
-        { name: 'Vanilla 105', url: 'images/vanilla/vanilla (105).png' },
-        { name: 'Vanilla 106', url: 'images/vanilla/vanilla (106).png' }
-
-    ],
-    'vestido': [
-        { name: 'vestido 1', url: 'images/vestido/vestido (1).png' },
-        { name: 'vestido 2', url: 'images/vestido/vestido (2).png' },
-        { name: 'vestido 3', url: 'images/vestido/vestido (3).png' },
-        { name: 'vestido 4', url: 'images/vestido/vestido (4).png' },
-        { name: 'vestido 5', url: 'images/vestido/vestido (5).png' },
-        { name: 'vestido 6', url: 'images/vestido/vestido (6).png' },
-        { name: 'vestido 7', url: 'images/vestido/vestido (7).png' },
-        { name: 'vestido 8', url: 'images/vestido/vestido (8).png' },
-        { name: 'vestido 9', url: 'images/vestido/vestido (9).png' },
-        { name: 'vestido 10', url: 'images/vestido/vestido (10).png' },
-        { name: 'vestido 11', url: 'images/vestido/vestido (11).png' }
-
-    ],
-    'cliks': [
-        { name: 'Clik 1', url: 'videos/cliks/clik (1).mp4' },
-        { name: 'Clik 2', url: 'videos/cliks/clik (2).mp4' },
-        { name: 'Clik 3', url: 'videos/cliks/clik (3).mp4' },
-        { name: 'Clik 4', url: 'videos/cliks/clik (4).mp4' },
-        { name: 'Clik 5', url: 'videos/cliks/clik (5).mp4' }
-    ],
-    'cliks18': [
-        { name: 'Clik +18 1', url: 'videos/cliks_+18/clik_+18 (1).mp4' },
-        { name: 'Clik +18 2', url: 'videos/cliks_+18/clik_+18 (2).mp4' },
-        { name: 'Clik +18 3', url: 'videos/cliks_+18/clik_+18 (3).mp4' },
-        { name: 'Clik +18 4', url: 'videos/cliks_+18/clik_+18 (4).mp4' },
-        { name: 'Clik +18 5', url: 'videos/cliks_+18/clik_+18 (5).mp4' },
-        { name: 'Clik +18 6', url: 'videos/cliks_+18/clik_+18 (6).mp4' },
-    ],
-}; 
+// Exportar la función para actualizar destacadas
+window.actualizarDestacadas = actualizarDestacadas; 

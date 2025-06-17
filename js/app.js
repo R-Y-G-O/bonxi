@@ -1,66 +1,99 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Variables para el manejo de términos y condiciones
-    let hasAcceptedTerms = localStorage.getItem('hasAcceptedTerms') === 'true';
-    let hasVerifiedAge = localStorage.getItem('hasVerifiedAge') === 'true';
-    let pendingUnlockAction = null;
+    // Cache de elementos DOM frecuentemente usados
+    const DOM = {
+        galleryGrid: document.querySelector('.gallery-grid'),
+        unlockAllBtn: document.getElementById('unlockAllBtn'),
+        termsModal: document.getElementById('termsModal'),
+        adultWarningModal: document.getElementById('adultWarningModal'),
+        sectionTitle: document.querySelector('.section-title'),
+        menuItems: document.querySelectorAll('.menu-item')
+    };
+
+    // Estado de la aplicación
+    const state = {
+        hasAcceptedTerms: localStorage.getItem('hasAcceptedTerms') === 'true',
+        hasVerifiedAge: localStorage.getItem('hasVerifiedAge') === 'true',
+        unlockedImages: new Set(JSON.parse(localStorage.getItem('unlockedImages') || '[]')),
+        allImagesUnlocked: localStorage.getItem('allImagesUnlocked') === 'true',
+        currentCategory: 'destacadas'
+    };
+
+    // Funciones de utilidad
+    const utils = {
+        saveToLocalStorage: (key, value) => {
+            localStorage.setItem(key, JSON.stringify(value));
+        },
+        loadFromLocalStorage: (key, defaultValue) => {
+            const value = localStorage.getItem(key);
+            return value ? JSON.parse(value) : defaultValue;
+        },
+        createElement: (tag, className, attributes = {}) => {
+            const element = document.createElement(tag);
+            if (className) element.className = className;
+            Object.entries(attributes).forEach(([key, value]) => {
+                element.setAttribute(key, value);
+            });
+            return element;
+        },
+        debounce: (func, wait) => {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    };
 
     // Función para mostrar el modal de términos y condiciones
     function showTermsModal() {
-        const modal = document.getElementById('termsModal');
         const acceptCheckbox = document.getElementById('acceptTerms');
         const acceptBtn = document.getElementById('acceptTermsBtn');
         const declineBtn = document.getElementById('declineTerms');
 
-        modal.classList.add('show');
+        DOM.termsModal.classList.add('show');
 
-        // Habilitar/deshabilitar botón de aceptar según el checkbox
         acceptCheckbox.addEventListener('change', () => {
             acceptBtn.disabled = !acceptCheckbox.checked;
         });
 
-        // Manejar aceptación de términos
         acceptBtn.addEventListener('click', () => {
-            localStorage.setItem('hasAcceptedTerms', 'true');
-            hasAcceptedTerms = true;
-            modal.classList.remove('show');
+            state.hasAcceptedTerms = true;
+            utils.saveToLocalStorage('hasAcceptedTerms', true);
+            DOM.termsModal.classList.remove('show');
             
-            // Si hay contenido adulto, mostrar advertencia
-            if (!hasVerifiedAge) {
+            if (!state.hasVerifiedAge) {
                 showAdultWarningModal(() => {});
             }
         });
 
-        // Manejar rechazo de términos
         declineBtn.addEventListener('click', () => {
             window.location.href = 'https://www.google.com';
         });
     }
 
-    // Verificar si es la primera visita
-    if (!hasAcceptedTerms) {
-        showTermsModal();
-    }
-
     // Función para mostrar el modal de advertencia
     function showAdultWarningModal(callback) {
-        const modal = document.getElementById('adultWarningModal');
         const confirmBtn = document.getElementById('confirmUnlock');
         const cancelBtn = document.getElementById('cancelUnlock');
         const rememberCheckbox = document.getElementById('rememberChoice');
 
-        modal.classList.add('show');
+        DOM.adultWarningModal.classList.add('show');
 
         const handleConfirm = () => {
             if (rememberCheckbox.checked) {
-                localStorage.setItem('hasVerifiedAge', 'true');
-                hasVerifiedAge = true;
+                state.hasVerifiedAge = true;
+                utils.saveToLocalStorage('hasVerifiedAge', true);
             }
-            modal.classList.remove('show');
+            DOM.adultWarningModal.classList.remove('show');
             if (callback) callback(true);
         };
 
         const handleCancel = () => {
-            modal.classList.remove('show');
+            DOM.adultWarningModal.classList.remove('show');
             if (callback) callback(false);
         };
 
@@ -70,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Función para verificar edad antes de desbloquear
     function verifyAgeBeforeUnlock(action) {
-        if (hasVerifiedAge) {
+        if (state.hasVerifiedAge) {
             action();
         } else {
             showAdultWarningModal((confirmed) => {
@@ -81,74 +114,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Función para obtener imágenes destacadas (12 imágenes aleatorias de todas las categorías)
-    function getFeaturedImages() {
-        const allImages = [];
-        Object.values(imageConfig).forEach(categoryImages => {
-            allImages.push(...categoryImages);
-        });
-        
-        // Mezclar el array y tomar 12 imágenes
-        return allImages.sort(() => Math.random() - 0.5).slice(0, 24);
-    }
-
-    // Función para cargar el estado de desbloqueo desde localStorage
-    function loadUnlockedState() {
-        const savedState = localStorage.getItem('unlockedImages');
-        return savedState ? new Set(JSON.parse(savedState)) : new Set();
-    }
-
-    // Función para guardar el estado de desbloqueo en localStorage
-    function saveUnlockedState() {
-        localStorage.setItem('unlockedImages', JSON.stringify([...unlockedImages]));
-    }
-
-    // Función para cargar el estado global de desbloqueo
-    function loadGlobalUnlockState() {
-        const savedState = localStorage.getItem('allImagesUnlocked');
-        return savedState === 'true';
-    }
-
-    // Función para guardar el estado global de desbloqueo
-    function saveGlobalUnlockState() {
-        localStorage.setItem('allImagesUnlocked', allImagesUnlocked);
-    }
-
-    // Set para mantener un registro de las imágenes desbloqueadas
-    const unlockedImages = loadUnlockedState();
-
-    // Variable para controlar el estado global de desbloqueo
-    let allImagesUnlocked = loadGlobalUnlockState();
-
     // Función para verificar si una imagen debe estar censurada
     function shouldBeCensored(imageUrl) {
-        // Si la imagen no es de la categoría cencura o cliks_+18, no debe estar censurada
         if (!imageUrl.includes('/cencura/') && !imageUrl.includes('/cliks_+18/')) {
             return false;
         }
-        // Si el estado global está desbloqueado, ninguna imagen debe estar censurada
-        if (allImagesUnlocked) {
-            return false;
-        }
-        // Si el estado global está bloqueado, todas las imágenes deben estar censuradas
-        return true;
+        return !state.allImagesUnlocked;
     }
 
     // Función para desbloquear/bloquear todas las imágenes
     function toggleAllImages() {
         verifyAgeBeforeUnlock(() => {
-            allImagesUnlocked = !allImagesUnlocked;
+            state.allImagesUnlocked = !state.allImagesUnlocked;
             const images = document.querySelectorAll('.card img, .card video');
             const unlockButtons = document.querySelectorAll('.unlock-btn');
-            const unlockAllBtn = document.getElementById('unlockAllBtn');
             
             images.forEach(img => {
                 if (img.src.includes('/cencura/') || img.src.includes('/cliks_+18/')) {
-                    if (allImagesUnlocked) {
-                        img.classList.remove('censored');
-                    } else {
-                        img.classList.add('censored');
-                        unlockedImages.delete(img.src);
+                    img.classList.toggle('censored', !state.allImagesUnlocked);
+                    if (!state.allImagesUnlocked) {
+                        state.unlockedImages.delete(img.src);
                     }
                 }
             });
@@ -156,76 +141,58 @@ document.addEventListener('DOMContentLoaded', () => {
             unlockButtons.forEach(btn => {
                 const mediaElement = btn.closest('.card').querySelector('img, video');
                 if (mediaElement.src.includes('/cencura/') || mediaElement.src.includes('/cliks_+18/')) {
-                    btn.innerHTML = allImagesUnlocked ? 
+                    btn.innerHTML = state.allImagesUnlocked ? 
                         '<i class="fas fa-unlock"></i>' : 
                         '<i class="fas fa-lock"></i>';
                 }
             });
 
-            unlockAllBtn.innerHTML = allImagesUnlocked ? 
-                '<i class="fas fa-lock"></i> Bloquear' : 
-                '<i class="fas fa-unlock-alt"></i> Desbloquear';
+            DOM.unlockAllBtn.innerHTML = state.allImagesUnlocked ? 
+                '<i class="fas fa-lock"></i> Bloquear +18' : 
+                '<i class="fas fa-unlock-alt"></i> Desbloquear +18';
 
-            saveUnlockedState();
-            saveGlobalUnlockState();
+            utils.saveToLocalStorage('unlockedImages', [...state.unlockedImages]);
+            utils.saveToLocalStorage('allImagesUnlocked', state.allImagesUnlocked);
         });
     }
 
     // Función para cargar imágenes según la categoría
     function loadImagesFromCategory(category) {
-        const galleryGrid = document.querySelector('.gallery-grid');
-        galleryGrid.innerHTML = '';
+        state.currentCategory = category;
+        DOM.galleryGrid.innerHTML = '';
 
-        let images;
-        if (category === 'destacadas') {
-            images = getFeaturedImages();
-        } else {
-            images = imageConfig[category] || [];
-        }
+        const images = category === 'destacadas' ? 
+            imageConfig.destacadas : 
+            (imageConfig[category] || []);
 
+        const fragment = document.createDocumentFragment();
         images.forEach(image => {
-            const card = createImageCard(image);
-            galleryGrid.appendChild(card);
+            fragment.appendChild(createImageCard(image));
         });
+        DOM.galleryGrid.appendChild(fragment);
 
-        // Actualizar el título y el icono
         updateTitleAndIcon(category);
-    }
-
-    // Función para crear elementos
-    function createElement(tag, className, attributes = {}) {
-        const element = document.createElement(tag);
-        if (className) element.className = className;
-        Object.entries(attributes).forEach(([key, value]) => {
-            element.setAttribute(key, value);
-        });
-        return element;
     }
 
     // Función para crear una tarjeta de imagen
     function createImageCard(image) {
-        const card = document.createElement('div');
-        card.className = 'card';
-        
+        const card = utils.createElement('div', 'card');
         const isVideo = image.url.endsWith('.mp4');
-        const mediaElement = document.createElement(isVideo ? 'video' : 'img');
+        const mediaElement = utils.createElement(isVideo ? 'video' : 'img', isVideo ? 'video-player' : '');
+        
         mediaElement.src = image.url;
         mediaElement.alt = image.name;
         
         if (isVideo) {
             mediaElement.controls = true;
-            mediaElement.className = 'video-player';
         }
         
         if (shouldBeCensored(image.url)) {
             mediaElement.classList.add('censored');
         }
         
-        const overlay = document.createElement('div');
-        overlay.className = 'overlay';
-        
-        const downloadBtn = document.createElement('button');
-        downloadBtn.className = 'download-btn';
+        const overlay = utils.createElement('div', 'overlay');
+        const downloadBtn = utils.createElement('button', 'download-btn');
         downloadBtn.innerHTML = '<i class="fas fa-download"></i>';
         downloadBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -233,24 +200,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         if (image.url.includes('/cencura/') || image.url.includes('/cliks_+18/')) {
-            const unlockBtn = document.createElement('button');
-            unlockBtn.className = 'unlock-btn';
+            const unlockBtn = utils.createElement('button', 'unlock-btn');
             unlockBtn.innerHTML = mediaElement.classList.contains('censored') ? 
                 '<i class="fas fa-lock"></i>' : 
                 '<i class="fas fa-unlock"></i>';
             unlockBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 verifyAgeBeforeUnlock(() => {
+                    mediaElement.classList.toggle('censored');
                     if (mediaElement.classList.contains('censored')) {
-                        mediaElement.classList.remove('censored');
-                        unlockedImages.add(image.url);
-                        unlockBtn.innerHTML = '<i class="fas fa-unlock"></i>';
-                    } else {
-                        mediaElement.classList.add('censored');
-                        unlockedImages.delete(image.url);
+                        state.unlockedImages.delete(image.url);
                         unlockBtn.innerHTML = '<i class="fas fa-lock"></i>';
+                    } else {
+                        state.unlockedImages.add(image.url);
+                        unlockBtn.innerHTML = '<i class="fas fa-unlock"></i>';
                     }
-                    saveUnlockedState();
+                    utils.saveToLocalStorage('unlockedImages', [...state.unlockedImages]);
                 });
             });
             overlay.appendChild(unlockBtn);
@@ -263,180 +228,180 @@ document.addEventListener('DOMContentLoaded', () => {
         return card;
     }
 
-    // Función para descargar una imagen
-    function downloadImage(url, name, button) {
-        // Agregar clase de descarga en progreso
-        button.classList.add('downloading');
-        
-        // Obtener la extensión del archivo de la URL
-        const extension = url.split('.').pop();
-        const fileName = `${name}.${extension}`;
-
+    // Función para descargar imagen
+    async function downloadImage(url, name, button) {
         try {
-            // Crear un enlace temporal
+            // Mostrar modal de confirmación
+            const confirmModal = utils.createElement('div', 'modal');
+            confirmModal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <i class="fas fa-download"></i>
+                        <h2>Confirmar Descarga</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>¿Deseas descargar "${name}"?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-secondary" id="cancelDownload">Cancelar</button>
+                        <button class="btn-primary" id="confirmDownload">Descargar</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(confirmModal);
+            confirmModal.classList.add('show');
+
+            // Esperar la respuesta del usuario
+            const userConfirmed = await new Promise((resolve) => {
+                document.getElementById('confirmDownload').onclick = () => {
+                    confirmModal.classList.remove('show');
+                    setTimeout(() => confirmModal.remove(), 300);
+                    resolve(true);
+                };
+
+                document.getElementById('cancelDownload').onclick = () => {
+                    confirmModal.classList.remove('show');
+                    setTimeout(() => confirmModal.remove(), 300);
+                    resolve(false);
+                };
+            });
+
+            if (!userConfirmed) {
+                return;
+            }
+
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            // Crear un enlace temporal para la descarga
             const link = document.createElement('a');
             link.href = url;
-            link.download = fileName;
+            link.download = name;
             link.target = '_blank';
+            link.rel = 'noopener noreferrer';
             
             // Simular clic en el enlace
             document.body.appendChild(link);
             link.click();
-            
-            // Limpiar
             document.body.removeChild(link);
+
+            // Mostrar mensaje de éxito
+            const successToast = utils.createElement('div', 'toast success');
+            successToast.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>Descarga iniciada</span>
+            `;
+            document.body.appendChild(successToast);
+            setTimeout(() => {
+                successToast.classList.add('show');
+                setTimeout(() => {
+                    successToast.classList.remove('show');
+                    setTimeout(() => successToast.remove(), 300);
+                }, 2000);
+            }, 100);
+
         } catch (error) {
-            console.error('Error al descargar la imagen:', error);
-            alert('Error al descargar la imagen. Por favor, inténtalo de nuevo.');
+            console.error('Error al descargar:', error);
+            
+            // Mostrar mensaje de error
+            const errorToast = utils.createElement('div', 'toast error');
+            errorToast.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Error al descargar el archivo</span>
+            `;
+            document.body.appendChild(errorToast);
+            setTimeout(() => {
+                errorToast.classList.add('show');
+                setTimeout(() => {
+                    errorToast.classList.remove('show');
+                    setTimeout(() => errorToast.remove(), 300);
+                }, 2000);
+            }, 100);
         } finally {
-            // Remover clase de descarga en progreso
-            button.classList.remove('downloading');
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-download"></i>';
         }
     }
 
-    // Función para actualizar el título y el icono según la categoría
+    // Función para actualizar título e icono
     function updateTitleAndIcon(category) {
-        const titleElement = document.querySelector('.section-title');
-        if (!titleElement) return;
-
-        const categoryConfig = {
-            'destacadas': {
-                title: 'Imágenes Destacadas',
-                icon: 'fa-star'
-            },
-            'vanilla': {
-                title: 'Imágenes Vanilla',
-                icon: 'fa-sun'
-            },
-            'cencura': {
-                title: 'Imágenes Censuradas',
-                icon: 'fa-lock'
-            },
-            'vampira': {
-                title: 'Imágenes Vampira',
-                icon: 'fa-moon'
-            },
-            'morena': {
-                title: 'Imágenes Morena',
-                icon: 'fa-user'
-            },
-            'bikini': {
-                title: 'Imágenes Bikini',
-                icon: 'fa-umbrella-beach'
-            },
-            'centauro': {
-                title: 'Imágenes Centauro',
-                icon: 'fa-horse'
-            },
-            'chibi': {
-                title: 'Imágenes Chibi',
-                icon: 'fa-child'
-            },
-            'milf': {
-                title: 'Imágenes Milf',
-                icon: 'fa-user-tie'
-            },
-            'gotica': {
-                title: 'Imágenes Gótica',
-                icon: 'fa-skull'
-            },
-            'trabajo': {
-                title: 'Imágenes Trabajo',
-                icon: 'fa-briefcase'
-            },
-            'vestido': {
-                title: 'Imágenes Vestido',
-                icon: 'fa-tshirt'
-            },
-            'furry': {
-                title: 'Imágenes Furry',
-                icon: 'fa-paw'
-            },
-            'desgarada': {
-                title: 'Imágenes Desgarada',
-                icon: 'fa-cut'
-            },
-            'terror': {
-                title: 'Imágenes Terror',
-                icon: 'fa-ghost'
-            },
-            'cliks': {
-                title: 'Videos Cliks',
-                icon: 'fa-video'
-            },
-            'cliks18': {
-                title: 'Videos Cliks +18',
-                icon: 'fa-video'
-            }
+        if (!DOM.sectionTitle) return;
+        
+        const categoryInfo = {
+            'destacadas': { title: 'Imágenes Destacadas', icon: 'fa-star' },
+            'bikini': { title: 'Bikini', icon: 'fa-umbrella-beach' },
+            'cencura': { title: 'Censurada', icon: 'fa-eye-slash' },
+            'centauro': { title: 'Centauro', icon: 'fa-horse' },
+            'chibi': { title: 'Chibi', icon: 'fa-child' },
+            'desgarada': { title: 'Desgarada', icon: 'fa-tshirt' },
+            'furry': { title: 'Furry', icon: 'fa-paw' },
+            'gotica': { title: 'Gótica', icon: 'fa-skull' },
+            'milf': { title: 'Milf', icon: 'fa-heart' },
+            'morena': { title: 'Morena', icon: 'fa-sun' },
+            'terror': { title: 'Terror', icon: 'fa-ghost' },
+            'trabajo': { title: 'Trabajo', icon: 'fa-briefcase' },
+            'vampira': { title: 'Vampira', icon: 'fa-moon' },
+            'vanilla': { title: 'Vanilla', icon: 'fa-ice-cream' },
+            'vestido': { title: 'Vestido', icon: 'fa-tshirt' },
+            'cliks': { title: 'Cliks', icon: 'fa-play' },
+            'cliks18': { title: 'Cliks +18', icon: 'fa-lock' }
         };
 
-        const config = categoryConfig[category] || categoryConfig['destacadas'];
-        titleElement.innerHTML = `<i class="fas ${config.icon}"></i> ${config.title}`;
+        const info = categoryInfo[category] || { title: category, icon: 'fa-image' };
+        DOM.sectionTitle.innerHTML = `<i class="fas ${info.icon}"></i> ${info.title}`;
     }
 
-    // Función para inicializar los filtros
+    // Inicialización
+    if (!state.hasAcceptedTerms) {
+        showTermsModal();
+    }
+
+    // Inicializar filtros
     function initializeFilters() {
-        const menuItems = document.querySelectorAll('.menu-item');
-        menuItems.forEach(item => {
-            item.addEventListener('click', () => {
-                // Remover clase active de todos los botones
-                menuItems.forEach(btn => btn.classList.remove('active'));
-                // Agregar clase active al botón clickeado
-                item.classList.add('active');
-                // Cargar imágenes de la categoría seleccionada
-                const category = item.getAttribute('data-category');
+        DOM.menuItems.forEach(button => {
+            button.addEventListener('click', () => {
+                const category = button.getAttribute('data-category');
                 loadImagesFromCategory(category);
+                
+                // Actualizar botones activos
+                DOM.menuItems.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
             });
         });
     }
 
-    // Inicializar la galería
-    initializeFilters();
+    // Inicializar botón de desbloqueo global
+    DOM.unlockAllBtn.addEventListener('click', toggleAllImages);
 
-    // Inicializar la vista de cuadrícula/lista
+    // Inicializar búsqueda
+    const searchInput = document.querySelector('.search-bar input');
+    if (searchInput) {
+        searchInput.addEventListener('input', utils.debounce((e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('img, video').alt.toLowerCase();
+                card.style.display = title.includes(searchTerm) ? 'block' : 'none';
+            });
+        }, 300));
+    }
+
+    // Inicializar vista de cuadrícula/lista
     const viewButtons = document.querySelectorAll('.view-btn');
     viewButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             viewButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            const galleryGrid = document.querySelector('.gallery-grid');
-            if (btn.querySelector('i').classList.contains('fa-th-list')) {
-                galleryGrid.style.gridTemplateColumns = '1fr';
-            } else {
-                galleryGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
-            }
+            DOM.galleryGrid.classList.toggle('list-view', 
+                btn.querySelector('i').classList.contains('fa-th-list')
+            );
         });
-    });
-
-    // Inicializar la búsqueda
-    const searchInput = document.querySelector('.search-bar input');
-    searchInput.addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') {
-            const searchTerm = searchInput.value.toLowerCase();
-            document.querySelectorAll('.card').forEach(card => {
-                const title = card.querySelector('img').alt.toLowerCase();
-                card.style.display = title.includes(searchTerm) ? 'block' : 'none';
-            });
-        }
-    });
-
-    // Agregar evento para el botón de desbloqueo global
-    const unlockAllBtn = document.getElementById('unlockAllBtn');
-    if (unlockAllBtn) {
-        unlockAllBtn.addEventListener('click', toggleAllImages);
-    }
-
-    // Inicializar el estado del botón al cargar la página
-    document.addEventListener('DOMContentLoaded', () => {
-        const unlockAllBtn = document.getElementById('unlockAllBtn');
-        if (unlockAllBtn) {
-            unlockAllBtn.innerHTML = allImagesUnlocked ? 
-                '<i class="fas fa-lock"></i> Bloquear +18' : 
-                '<i class="fas fa-unlock-alt"></i> Desbloquear +18';
-        }
     });
 
     // Cargar imágenes destacadas por defecto
     loadImagesFromCategory('destacadas');
+    initializeFilters();
 }); 
