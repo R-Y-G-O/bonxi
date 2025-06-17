@@ -482,7 +482,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Cargar imágenes destacadas por defecto
-    loadImagesFromCategory('destacadas');
-    initializeFilters();
+    // Inicializar la aplicación
+    async function initializeApp() {
+        try {
+            // Esperar a que se inicialice la configuración
+            await inicializarConfiguracion();
+            
+            // Cargar imágenes destacadas
+            loadImagesFromCategory('destacadas');
+            
+            // Inicializar filtros
+            initializeFilters();
+        } catch (error) {
+            console.error('Error al inicializar la aplicación:', error);
+        }
+    }
+
+    // Iniciar la aplicación
+    initializeApp();
 }); 
