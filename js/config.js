@@ -16,7 +16,7 @@ const CONFIG = {
         'centauro': 10,
         'chibi': 15,
         'desgarada': 9,
-        'furry': 8,
+        'furry': 7,
         'gotica': 50,
         'milf': 71,
         'morena': 7,
