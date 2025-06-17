@@ -13,7 +13,7 @@ const CONFIG = {
     categoryLimits: {
         'bikini': 44,
         'cencura': 118,
-        'centauro': 26,
+        'centauro': 10,
         'chibi': 15,
         'desgarada': 9,
         'furry': 8,
@@ -23,7 +23,7 @@ const CONFIG = {
         'terror': 6,
         'trabajo': 72,
         'vampira': 50,
-        'vanilla': 1140,
+        'vanilla': 114,
         'vestido': 11
     },
     videoCategories: {
@@ -80,12 +80,15 @@ const imageConfig = {
 // Función para inicializar la configuración
 async function inicializarConfiguracion() {
     try {
-        // Configurar imágenes en paralelo
-        const promesasCategorias = CONFIG.categories.map(categoria => 
+        // Cargar primero las categorías más importantes
+        const categoriasPrioritarias = ['destacadas', 'vanilla', 'cencura', 'vampira', 'milf'];
+        
+        // Cargar categorías prioritarias primero
+        await Promise.all(categoriasPrioritarias.map(categoria => 
             crearArrayImagenes(categoria, CONFIG.categoryLimits[categoria]).then(imagenes => {
                 imageConfig[categoria] = imagenes;
             })
-        );
+        ));
 
         // Configurar videos
         Object.entries(CONFIG.videoCategories).forEach(([categoria, config]) => {
@@ -95,10 +98,18 @@ async function inicializarConfiguracion() {
             }));
         });
 
-        await Promise.all(promesasCategorias);
-        actualizarDestacadas();
+        // Cargar el resto de categorías en segundo plano
+        const categoriasRestantes = CONFIG.categories.filter(cat => !categoriasPrioritarias.includes(cat));
+        Promise.all(categoriasRestantes.map(categoria => 
+            crearArrayImagenes(categoria, CONFIG.categoryLimits[categoria]).then(imagenes => {
+                imageConfig[categoria] = imagenes;
+            })
+        )).then(() => {
+            console.log('Todas las categorías han sido cargadas');
+        });
 
-        console.log('Configuración cargada exitosamente');
+        actualizarDestacadas();
+        console.log('Configuración inicial cargada exitosamente');
     } catch (error) {
         console.error('Error al inicializar la configuración:', error);
     }

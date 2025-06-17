@@ -180,11 +180,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const isVideo = image.url.endsWith('.mp4');
         const mediaElement = utils.createElement(isVideo ? 'video' : 'img', isVideo ? 'video-player' : '');
         
+        if (!isVideo) {
+            mediaElement.loading = 'lazy';
+            mediaElement.decoding = 'async';
+        }
+        
         mediaElement.src = image.url;
         mediaElement.alt = image.name;
         
         if (isVideo) {
             mediaElement.controls = true;
+            mediaElement.preload = 'metadata';
         }
         
         if (shouldBeCensored(image.url)) {
@@ -357,7 +363,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const titleContent = utils.createElement('div', 'title-content');
         const imageCount = imageConfig[category] ? imageConfig[category].length : 0;
         const maxImages = category === 'destacadas' ? CONFIG.maxFeaturedImages : 
-                         CONFIG.categoryLimits[category];
+                         (CONFIG.videoCategories[category] ? CONFIG.videoCategories[category].count :
+                          CONFIG.categoryLimits[category]);
         
         titleContent.innerHTML = `
             <i class="fas ${info.icon}"></i> 
@@ -446,22 +453,58 @@ document.addEventListener('DOMContentLoaded', () => {
         showTermsModal();
     }
 
-    // Inicializar filtros
+    // Inicializar filtros y eventos
     function initializeFilters() {
-        DOM.menuItems.forEach(button => {
-            button.addEventListener('click', () => {
-                const category = button.getAttribute('data-category');
-                loadImagesFromCategory(category);
-                
-                // Actualizar botones activos
-                DOM.menuItems.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-            });
-        });
-    }
+        // Delegación de eventos para los botones del menú
+        document.querySelector('.menu').addEventListener('click', (e) => {
+            const menuItem = e.target.closest('.menu-item');
+            if (!menuItem) return;
 
-    // Inicializar botón de desbloqueo global
-    DOM.unlockAllBtn.addEventListener('click', toggleAllImages);
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            menuItem.classList.add('active');
+            loadImagesFromCategory(menuItem.dataset.category);
+        });
+
+        // Delegación de eventos para los botones de vista
+        document.querySelector('.view-toggle').addEventListener('click', (e) => {
+            const viewBtn = e.target.closest('.view-btn');
+            if (!viewBtn) return;
+
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            viewBtn.classList.add('active');
+            DOM.galleryGrid.className = `gallery-grid ${viewBtn.querySelector('i').classList.contains('fa-th-list') ? 'list-view' : ''}`;
+        });
+
+        // Delegación de eventos para la galería
+        DOM.galleryGrid.addEventListener('click', (e) => {
+            const card = e.target.closest('.card');
+            if (!card) return;
+
+            const mediaElement = card.querySelector('img, video');
+            if (!mediaElement) return;
+
+            if (e.target.closest('.download-btn')) {
+                const imageName = mediaElement.alt;
+                downloadImage(mediaElement.src, imageName, e.target);
+            } else if (e.target.closest('.unlock-btn')) {
+                verifyAgeBeforeUnlock(() => {
+                    mediaElement.classList.toggle('censored');
+                    const unlockBtn = e.target.closest('.unlock-btn');
+                    if (mediaElement.classList.contains('censored')) {
+                        state.unlockedImages.delete(mediaElement.src);
+                        unlockBtn.innerHTML = '<i class="fas fa-lock"></i>';
+                    } else {
+                        state.unlockedImages.add(mediaElement.src);
+                        unlockBtn.innerHTML = '<i class="fas fa-unlock"></i>';
+                    }
+                    utils.saveToLocalStorage('unlockedImages', [...state.unlockedImages]);
+                });
+            }
+        });
+
+        // Evento para desbloquear todas las imágenes
+        DOM.unlockAllBtn.addEventListener('click', toggleAllImages);
+    }
 
     // Inicializar búsqueda
     const searchInput = document.querySelector('.search-bar input');
@@ -476,19 +519,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }, 300));
     }
-
-    // Inicializar vista de cuadrícula/lista
-    const viewButtons = document.querySelectorAll('.view-btn');
-    viewButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            viewButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            DOM.galleryGrid.classList.toggle('list-view', 
-                btn.querySelector('i').classList.contains('fa-th-list')
-            );
-        });
-    });
 
     // Inicializar la aplicación
     async function initializeApp() {
