@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             document.body.appendChild(confirmModal);
             confirmModal.classList.add('show');
-
+        
             // Esperar la respuesta del usuario
             const userConfirmed = await new Promise((resolve) => {
                 document.getElementById('confirmDownload').onclick = () => {
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para actualizar título e icono
     function updateTitleAndIcon(category) {
         if (!DOM.sectionTitle) return;
-        
+
         const categoryInfo = {
             'destacadas': { title: 'Imágenes Destacadas', icon: 'fa-star' },
             'bikini': { title: 'Bikini', icon: 'fa-umbrella-beach' },
@@ -349,7 +349,88 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const info = categoryInfo[category] || { title: category, icon: 'fa-image' };
-        DOM.sectionTitle.innerHTML = `<i class="fas ${info.icon}"></i> ${info.title}`;
+        
+        // Crear el contenedor del título con el botón de ordenamiento
+        const titleContainer = utils.createElement('div', 'title-container');
+        
+        // Agregar el título y el ícono
+        const titleContent = utils.createElement('div', 'title-content');
+        titleContent.innerHTML = `<i class="fas ${info.icon}"></i> ${info.title}`;
+        titleContainer.appendChild(titleContent);
+
+        // Agregar el botón de ordenamiento solo si no es la categoría destacadas
+        if (category !== 'destacadas') {
+            const sortButton = utils.createElement('button', 'sort-btn');
+            const storageKey = `sort_${category}`;
+            let isReversed = localStorage.getItem(storageKey) === 'true';
+
+            // Función para obtener el número de la imagen del nombre del archivo
+            const getImageNumber = (url) => {
+                const match = url.match(/\((\d+)\)/);
+                return match ? parseInt(match[1]) : 0;
+            };
+
+            // Función para actualizar el texto del botón
+            const updateButtonText = () => {
+                if (isReversed) {
+                    sortButton.innerHTML = '<i class="fas fa-sort-numeric-up"></i> Más nueva a más antigua';
+                } else {
+                    sortButton.innerHTML = '<i class="fas fa-sort-numeric-down"></i> Más antigua a más nueva';
+                }
+            };
+
+            // Inicializar el texto del botón
+            updateButtonText();
+
+            // Función para ordenar las imágenes
+            const sortImages = () => {
+                // Ordenar las imágenes según el estado actual
+                imageConfig[category].sort((a, b) => {
+                    const numA = getImageNumber(a.url);
+                    const numB = getImageNumber(b.url);
+                    return isReversed ? numB - numA : numA - numB;
+                });
+            };
+
+            // Ordenar las imágenes inicialmente
+            sortImages();
+
+            // Agregar el evento de clic al botón
+            sortButton.addEventListener('click', () => {
+                // Cambiar el estado
+                isReversed = !isReversed;
+                
+                // Guardar el estado en localStorage
+                localStorage.setItem(storageKey, isReversed);
+                
+                // Actualizar la apariencia del botón
+                sortButton.classList.toggle('active');
+                
+                // Actualizar el texto del botón
+                updateButtonText();
+                
+                // Ordenar las imágenes
+                sortImages();
+                
+                // Recargar la vista
+                loadImagesFromCategory(category);
+                
+                // Forzar la actualización del DOM
+                setTimeout(() => {
+                    const newSortButton = document.querySelector('.sort-btn');
+                    if (newSortButton) {
+                        newSortButton.innerHTML = isReversed ? 
+                            '<i class="fas fa-sort-numeric-up"></i> Más nueva a más antigua' : 
+                            '<i class="fas fa-sort-numeric-down"></i> Más antigua a más nueva';
+                    }
+                }, 0);
+            });
+
+            titleContainer.appendChild(sortButton);
+        }
+
+        DOM.sectionTitle.innerHTML = '';
+        DOM.sectionTitle.appendChild(titleContainer);
     }
 
     // Inicialización

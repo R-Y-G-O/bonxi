@@ -4,7 +4,7 @@ const CONFIG = {
         images: 'images/',
         videos: 'videos/'
     },
-    maxImagesPerCategory: 500,
+    maxImagesPerCategory: 10,
     maxFeaturedImages: 12,
     categories: [
         'bikini', 'cencura', 'centauro', 'chibi', 'desgarada',
