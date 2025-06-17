@@ -32,49 +32,18 @@ const CONFIG = {
     }
 };
 
-// Cache para almacenar imágenes verificadas
-const imageCache = new Map();
-
-// Función para verificar si una imagen existe (con caché)
-async function verificarImagen(url) {
-    if (imageCache.has(url)) {
-        return imageCache.get(url);
-    }
-
-    return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => {
-            imageCache.set(url, true);
-            resolve(true);
-        };
-        img.onerror = () => {
-            imageCache.set(url, false);
-            resolve(false);
-        };
-        img.src = url;
-    });
-}
-
-// Función para crear array de imágenes verificadas (optimizada)
+// Función para crear array de imágenes
 async function crearArrayImagenes(categoria, maxNumero) {
     const imagenes = [];
-    const promesas = [];
-
+    
     for (let i = 1; i <= maxNumero; i++) {
         const url = `${CONFIG.basePaths.images}${categoria}/${categoria} (${i}).webp`;
-        promesas.push(
-            verificarImagen(url).then(existe => {
-                if (existe) {
-                    imagenes.push({
-                        name: `${categoria.charAt(0).toUpperCase() + categoria.slice(1)} ${i}`,
-                        url: url
-                    });
-                }
-            })
-        );
+        imagenes.push({
+            name: `${categoria.charAt(0).toUpperCase() + categoria.slice(1)} ${i}`,
+            url: url
+        });
     }
 
-    await Promise.all(promesas);
     return imagenes;
 }
 
