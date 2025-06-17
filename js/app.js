@@ -448,6 +448,41 @@ document.addEventListener('DOMContentLoaded', () => {
         DOM.sectionTitle.appendChild(titleContainer);
     }
 
+    // Función para mostrar notificaciones iniciales
+    function showInitialNotifications() {
+        // Notificación de bienvenida
+        const welcomeToast = utils.createElement('div', 'toast success');
+        welcomeToast.innerHTML = `
+            <i class="fas fa-hand-wave"></i>
+            <span>¡Bienvenido a Galería Bonxi!</span>
+        `;
+        document.body.appendChild(welcomeToast);
+        setTimeout(() => {
+            welcomeToast.classList.add('show');
+            setTimeout(() => {
+                welcomeToast.classList.remove('show');
+                setTimeout(() => welcomeToast.remove(), 300);
+            }, 3000);
+        }, 100);
+
+        // Notificación de contenido
+        setTimeout(() => {
+            const contentToast = utils.createElement('div', 'toast');
+            contentToast.innerHTML = `
+                <i class="fas fa-info-circle"></i>
+                <span>Explora nuestras diferentes categorías de contenido</span>
+            `;
+            document.body.appendChild(contentToast);
+            setTimeout(() => {
+                contentToast.classList.add('show');
+                setTimeout(() => {
+                    contentToast.classList.remove('show');
+                    setTimeout(() => contentToast.remove(), 300);
+                }, 3000);
+            }, 100);
+        }, 3500);
+    }
+
     // Inicialización
     if (!state.hasAcceptedTerms) {
         showTermsModal();
@@ -531,6 +566,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Inicializar filtros
             initializeFilters();
+
+            // Mostrar notificaciones iniciales
+            showInitialNotifications();
         } catch (error) {
             console.error('Error al inicializar la aplicación:', error);
         }
