@@ -154,6 +154,13 @@ nav {
     color: var(--primary-dark);
 }
 
+.image-count {
+    font-size: 1rem;
+    color: var(--gray);
+    margin-left: 10px;
+    font-weight: normal;
+}
+
 .filter-bar {
     margin-top: 10px;
     display: flex;

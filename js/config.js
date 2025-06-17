@@ -4,13 +4,28 @@ const CONFIG = {
         images: 'images/',
         videos: 'videos/'
     },
-    maxImagesPerCategory: 150,
     maxFeaturedImages: 12,
     categories: [
         'bikini', 'cencura', 'centauro', 'chibi', 'desgarada',
         'furry', 'gotica', 'milf', 'morena', 'terror',
         'trabajo', 'vampira', 'vanilla', 'vestido'
     ],
+    categoryLimits: {
+        'bikini': 20,
+        'cencura': 15,
+        'centauro': 10,
+        'chibi': 15,
+        'desgarada': 9,
+        'furry': 8,
+        'gotica': 20,
+        'milf': 15,
+        'morena': 7,
+        'terror': 6,
+        'trabajo': 12,
+        'vampira': 15,
+        'vanilla': 20,
+        'vestido': 11
+    },
     videoCategories: {
         cliks: { count: 5, path: 'cliks/clik' },
         cliks18: { count: 6, path: 'cliks_+18/clik_+18' }
@@ -98,7 +113,7 @@ async function inicializarConfiguracion() {
     try {
         // Configurar imágenes en paralelo
         const promesasCategorias = CONFIG.categories.map(categoria => 
-            crearArrayImagenes(categoria, CONFIG.maxImagesPerCategory).then(imagenes => {
+            crearArrayImagenes(categoria, CONFIG.categoryLimits[categoria]).then(imagenes => {
                 imageConfig[categoria] = imagenes;
             })
         );
@@ -119,9 +134,6 @@ async function inicializarConfiguracion() {
         console.error('Error al inicializar la configuración:', error);
     }
 }
-
-// Inicializar la configuración
-inicializarConfiguracion();
 
 // Exportar la función para actualizar destacadas
 window.actualizarDestacadas = actualizarDestacadas; 

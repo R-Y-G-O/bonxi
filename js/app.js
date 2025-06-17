@@ -355,7 +355,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Agregar el título y el ícono
         const titleContent = utils.createElement('div', 'title-content');
-        titleContent.innerHTML = `<i class="fas ${info.icon}"></i> ${info.title}`;
+        const imageCount = imageConfig[category] ? imageConfig[category].length : 0;
+        const maxImages = category === 'destacadas' ? CONFIG.maxFeaturedImages : 
+                         CONFIG.categoryLimits[category];
+        
+        titleContent.innerHTML = `
+            <i class="fas ${info.icon}"></i> 
+            ${info.title} 
+            <span class="image-count">(${imageCount}/${maxImages})</span>
+        `;
         titleContainer.appendChild(titleContent);
 
         // Agregar el botón de ordenamiento solo si no es la categoría destacadas
