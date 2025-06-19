@@ -11,19 +11,19 @@ const CONFIG = {
         'trabajo', 'vampira', 'vanilla', 'vestido'
     ],
     categoryLimits: {
-        'bikini': 44,
-        'cencura': 118,
+        'bikini': 69,
+        'cencura': 119,
         'centauro': 10,
         'chibi': 15,
         'desgarada': 9,
         'furry': 7,
-        'gotica': 50,
-        'milf': 71,
+        'gotica': 54,
+        'milf': 77,
         'morena': 7,
         'terror': 6,
-        'trabajo': 72,
+        'trabajo': 77,
         'vampira': 50,
-        'vanilla': 114,
+        'vanilla': 120,
         'vestido': 11
     },
     videoCategories: {
