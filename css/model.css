@@ -1,0 +1,208 @@
+/* Modelo Section */
+.model-section {
+    background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
+}
+
+.model-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.model-showcase {
+    display: flex;
+    justify-content: center;
+}
+
+.model-container {
+    width: 100%;
+    height: 100%;
+    background: var(--white);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-dark);
+    border: 4px solid var(--primary-green);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.model-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+    transition: opacity 0.3s ease;
+}
+
+.model-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.model-video.playing {
+    opacity: 1;
+}
+
+.model-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 16px;
+}
+
+.model-container:hover .model-overlay {
+    opacity: 1;
+}
+
+.play-button {
+    background: var(--gradient-green);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-green);
+}
+
+.play-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 15px 35px rgba(34, 197, 94, 0.6);
+}
+
+.play-button i {
+    margin-left: 3px;
+}
+
+.model-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--white);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-dark);
+    border: 4px solid var(--primary-green);
+}
+
+.model-rotation {
+    font-size: 6rem;
+    color: var(--primary-green);
+    margin-bottom: 1rem;
+    animation: rotate 10s linear infinite;
+}
+
+.model-info h3 {
+    color: var(--primary-green);
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.model-info p {
+    color: var(--text-light);
+    text-align: center;
+}
+
+.model-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.feature-item {
+    text-align: center;
+    padding: 2rem;
+    background: var(--white);
+    border-radius: 15px;
+    box-shadow: var(--shadow-dark);
+    transition: transform 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-item:nth-child(1) {
+    border-top: 4px solid var(--primary-green);
+}
+
+.feature-item:nth-child(1)::before {
+    background: var(--gradient-green);
+}
+
+.feature-item:nth-child(2) {
+    border-top: 4px solid var(--celeste);
+}
+
+.feature-item:nth-child(2)::before {
+    background: var(--gradient-celeste);
+}
+
+.feature-item:nth-child(3) {
+    border-top: 4px solid var(--orange);
+}
+
+.feature-item:nth-child(3)::before {
+    background: var(--gradient-orange);
+}
+
+.feature-item:nth-child(4) {
+    border-top: 4px solid var(--primary-green);
+}
+
+.feature-item:nth-child(4)::before {
+    background: var(--gradient-green);
+}
+
+.feature-item:nth-child(1):hover,
+.feature-item:nth-child(4):hover {
+    box-shadow: var(--shadow-green);
+}
+
+.feature-item:nth-child(2):hover {
+    box-shadow: var(--shadow-celeste);
+}
+
+.feature-item:nth-child(3):hover {
+    box-shadow: var(--shadow-orange);
+}
+
+.feature-item i {
+    font-size: 2.5rem;
+    color: var(--primary-green);
+    margin-bottom: 1rem;
+}
+
+.feature-item h4 {
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.feature-item p {
+    color: var(--text-light);
+    font-size: 0.9rem;
+} 

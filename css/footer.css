@@ -1,0 +1,132 @@
+/* Footer */
+.footer {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    color: var(--white);
+    padding: 3rem 0 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-green);
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--primary-green);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer-logo::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-green);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.footer-logo:hover::before {
+    left: 0;
+}
+
+.footer-logo:hover {
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-green);
+}
+
+.footer-logo i {
+    font-size: 1.6rem;
+    animation: pulse 2s infinite;
+}
+
+.footer-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #9ca3af;
+}
+
+.footer-social {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.footer-social a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(34, 197, 94, 0.1);
+    border-radius: 50%;
+    color: var(--primary-green);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.footer-social a:hover {
+    background: var(--gradient-green);
+    color: var(--white);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-green);
+    border-color: var(--primary-green);
+}
+
+.footer-social i {
+    font-size: 1.2rem;
+}
+
+.footer-decoration {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    background: var(--gradient-green);
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.05;
+    z-index: 1;
+} 

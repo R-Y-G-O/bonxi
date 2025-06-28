@@ -1,0 +1,108 @@
+/* Detalles Section */
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.detail-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-dark);
+    text-align: center;
+    transition: transform 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.detail-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.detail-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-green);
+}
+
+.detail-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.detail-icon i {
+    font-size: 2rem;
+    color: var(--white);
+}
+
+.detail-card h3 {
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.detail-card ul {
+    list-style: none;
+    text-align: left;
+}
+
+.detail-card li {
+    padding: 0.5rem 0;
+    color: var(--text-light);
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.detail-card:nth-child(1) {
+    border-top: 6px solid var(--primary-green);
+}
+
+.detail-card:nth-child(1)::before {
+    background: var(--gradient-green);
+}
+
+.detail-card:nth-child(2) {
+    border-top: 6px solid var(--celeste);
+}
+
+.detail-card:nth-child(2)::before {
+    background: var(--gradient-celeste);
+}
+
+.detail-card:nth-child(3) {
+    border-top: 6px solid var(--orange);
+}
+
+.detail-card:nth-child(3)::before {
+    background: var(--gradient-orange);
+}
+
+.detail-card:nth-child(4) {
+    border-top: 6px solid var(--primary-green);
+}
+
+.detail-card:nth-child(4)::before {
+    background: var(--gradient-green);
+}
+
+.detail-card:nth-child(1):hover,
+.detail-card:nth-child(4):hover {
+    box-shadow: var(--shadow-green);
+}
+
+.detail-card:nth-child(2):hover {
+    box-shadow: var(--shadow-celeste);
+}
+
+.detail-card:nth-child(3):hover {
+    box-shadow: var(--shadow-orange);
+} 
