@@ -1,6 +1,6 @@
 /* Hero Section */
 .hero {
-    min-height: 100vh;
+    min-height: 85vh;
     display: flex;
     align-items: center;
     position: relative;
@@ -8,9 +8,14 @@
     overflow: hidden;
 }
 
+body.vampire-theme .hero,
+body.vampire-theme .hero-background {
+    background: var(--gradient-green) !important;
+    color: #fbeaec !important;
+}
+
 .hero-background {
     position: absolute;
-    top: 0;
     left: 0;
     width: 100%;
     height: 100%;
@@ -19,6 +24,7 @@
 
 .floating-elements {
     position: absolute;
+    margin-top: 0px;
     width: 100%;
     height: 100%;
 }

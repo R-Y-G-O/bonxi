@@ -234,4 +234,88 @@ body {
 
 .falling-leaf:nth-child(even) {
     animation-duration: 10s;
+}
+
+/* --- Modo Vampiro --- */
+body.vampire-theme {
+    --primary-green: #8b000f;
+    --accent-green: #c7001a;
+    --background: #120008;
+    --text: #fbeaec;
+    --accent: #c7001a;
+    --white: #fbeaec;
+    --text-dark: #fbeaec;
+    --text-light: #c7001a;
+    --gradient-green: linear-gradient(135deg, #2d0006 0%, #8b000f 100%);
+    --gradient-celeste: linear-gradient(135deg, #3a0a13 0%, #c7001a 100%);
+    --gradient-orange: linear-gradient(135deg, #4d1a0a 0%, #c7001a 100%);
+    --gradient-mixed: linear-gradient(135deg, #2d0006 0%, #8b000f 50%, #3a0a13 100%);
+    --shadow-green: 0 4px 20px rgba(139,0,15,0.3);
+    background: var(--background) !important;
+    color: var(--text) !important;
+    transition: background 0.5s, color 0.5s;
+}
+body.vampire-theme .navbar,
+body.vampire-theme .footer,
+body.vampire-theme .section{
+    background: rgba(26,0,10,0.95) !important;
+    color: var(--text) !important;
+}
+body.vampire-theme .nav-logo span,
+body.vampire-theme .nav-menu a,
+body.vampire-theme .footer-logo span {
+    color: var(--accent) !important;
+}
+body.vampire-theme .btn-primary {
+    background: var(--accent) !important;
+    color: #fff !important;
+    border: 1px solid #b3001b !important;
+}
+body.vampire-theme .btn-secondary {
+    background: #fff !important;
+    color: var(--accent) !important;
+    border: 1px solid var(--accent) !important;
+}
+body.vampire-theme .about-card,
+body.vampire-theme .detail-card,
+body.vampire-theme .feature-item,
+body.vampire-theme .personal-card {
+    background: rgba(60,0,20,0.8) !important;
+    border-color: var(--accent) !important;
+    color: var(--text) !important;
+}
+body.vampire-theme .stat-number {
+    color: var(--accent) !important;
+}
+body.vampire-theme .hero-title .gradient-text {
+    background: linear-gradient(90deg, #ff003c, #b3001b, #ff003c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+}
+
+/* Animación sangre */
+@keyframes blood-drip {
+    0% { opacity: 0; transform: translateY(-100px); }
+    30% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0.7; transform: translateY(20px); }
+}
+
+@keyframes drop-slide {
+    0% { opacity: 0; transform: translateY(-100px); }
+    10% { opacity: 0.8; }
+    100% { opacity: 0.8; transform: translateY(100vh); }
+}
+
+.falling-drop {
+    pointer-events: none;
+    user-select: none;
+    filter: drop-shadow(0 2px 8px #c7001a);
+}
+
+@keyframes lianas-grow {
+    0% { opacity: 0; transform: translateY(100vh) scaleY(0.2); }
+    30% { opacity: 1; transform: translateY(0) scaleY(1); }
+    1000% { opacity: 0.7; transform: translateY(0) scaleY(1); }
 } 

@@ -3,6 +3,12 @@
     background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
 }
 
+body.vampire-theme .historia-section,
+body.vampire-theme .historia-content {
+    background: var(--gradient-green) !important;
+    color: #fbeaec !important;
+}
+
 .historia-content {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -18,6 +24,11 @@
     border-left: 6px solid var(--primary-green);
 }
 
+body.vampire-theme .historia-main {
+    background: rgba(26,0,10,0.95) !important;
+    color: #fbeaec !important;
+}
+
 .historia-story h3 {
     color: var(--primary-green);
     font-size: 1.5rem;
@@ -25,6 +36,11 @@
     margin-top: 2rem;
     border-bottom: 2px solid var(--light-green);
     padding-bottom: 0.5rem;
+}
+
+body.vampire-theme .historia-story h3 {
+    border-bottom: 2px solid #c7001a !important;
+    color: #fbeaec !important;
 }
 
 .historia-story h3:first-child {

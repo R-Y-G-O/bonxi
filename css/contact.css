@@ -3,6 +3,18 @@
     background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
 }
 
+body.vampire-theme .contact-section,
+body.vampire-theme .contact-content {
+    background: var(--gradient-green) !important;
+    color: #fbeaec !important;
+}
+
+body.vampire-theme .social-link {
+    background: rgba(26,0,10,0.95) !important;
+    color: #fbeaec !important;
+    border: 1px solid #c7001a !important;
+}
+
 .contact-content {
     display: flex;
     justify-content: center;

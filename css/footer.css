@@ -8,6 +8,11 @@
     overflow: hidden;
 }
 
+body.vampire-theme .footer {
+    background: var(--gradient-green) !important;
+    color: #fbeaec !important;
+}
+
 .footer::before {
     content: '';
     position: absolute;

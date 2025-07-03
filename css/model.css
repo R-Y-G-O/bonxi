@@ -3,6 +3,13 @@
     background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
 }
 
+body.vampire-theme .model-section,
+body.vampire-theme .model-container,
+body.vampire-theme .model-viewer {
+    background: var(--gradient-green) !important;
+    color: #fbeaec !important;
+}
+
 .model-content {
     display: grid;
     grid-template-columns: 1fr 1fr;

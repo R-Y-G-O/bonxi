@@ -117,35 +117,50 @@ document.addEventListener('DOMContentLoaded', function() {
         statsObserver.observe(stat);
     });
 
-    // Efectos de partículas flotantes (hojas cayendo)
+    // Efectos de partículas flotantes (hojas cayendo o gotas de sangre)
     let leafInterval;
     let isLeafEffectActive = false;
+    let vampireActive = false;
+    const vampireToggle = document.getElementById('vampire-theme-toggle');
+    const moonIcon = document.getElementById('moon-icon');
+    const navbarIcon = document.getElementById('navbar-icon');
 
-    function createLeaf() {
-        const leaf = document.createElement('div');
-        leaf.className = 'falling-leaf';
-        leaf.innerHTML = '<i class="fas fa-leaf"></i>';
-        leaf.style.cssText = `
-            position: fixed;
-            font-size: 1.5rem;
-            pointer-events: none;
-            z-index: 1;
-            opacity: 0.7;
-            animation: fall 8s linear infinite;
-            color: var(--primary-green);
-        `;
-        
-        leaf.style.left = Math.random() * window.innerWidth + 'px';
-        leaf.style.top = -50 + 'px';
-        leaf.style.animationDelay = Math.random() * 5 + 's';
-        leaf.style.animationDuration = (Math.random() * 3 + 5) + 's';
-        
-        document.body.appendChild(leaf);
-        
-        // Remover la hoja después de que termine la animación
+    function createLeafOrDrop() {
+        const el = document.createElement('div');
+        if (vampireActive) {
+            el.className = 'falling-drop';
+            el.textContent = '🩸';
+            el.style.cssText = `
+                position: fixed;
+                font-size: 2rem;
+                pointer-events: none;
+                z-index: 1;
+                opacity: 0.8;
+                animation: drop-slide 8s linear;
+                left: ${Math.random() * window.innerWidth}px;
+                top: -50px;
+            `;
+        } else {
+            el.className = 'falling-leaf';
+            el.innerHTML = '<i class="fas fa-leaf"></i>';
+            el.style.cssText = `
+                position: fixed;
+                font-size: 1.5rem;
+                pointer-events: none;
+                z-index: 1;
+                opacity: 0.7;
+                animation: fall 8s linear infinite;
+                color: var(--primary-green);
+                left: ${Math.random() * window.innerWidth}px;
+                top: -50px;
+                animation-delay: ${Math.random() * 5}s;
+                animation-duration: ${(Math.random() * 3 + 5)}s;
+            `;
+        }
+        document.body.appendChild(el);
         setTimeout(() => {
-            if (leaf.parentNode) {
-                leaf.remove();
+            if (el.parentNode) {
+                el.remove();
             }
         }, 10000);
     }
@@ -153,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function startLeafEffect() {
         if (!isLeafEffectActive) {
             isLeafEffectActive = true;
-            leafInterval = setInterval(createLeaf, 800);
+            leafInterval = setInterval(createLeafOrDrop, 800);
         }
     }
 
@@ -164,16 +179,108 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Controlar el efecto de hojas basado en el scroll
+    // Controlar el efecto de partículas basado en el scroll
     window.addEventListener('scroll', function() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
         if (scrollTop > 100) {
             startLeafEffect();
         } else {
             stopLeafEffect();
         }
     });
+
+    function showBloodEffect() {
+        let blood = document.createElement('div');
+        blood.id = 'blood-effect';
+        blood.style.position = 'fixed';
+        blood.style.top = '70px';
+        blood.style.left = '0';
+        blood.style.width = '100vw';
+        blood.style.height = '100vh';
+        blood.style.pointerEvents = 'none';
+        blood.style.zIndex = '1000';
+        blood.style.background = 'url("imagenes/sangre.png") repeat-x top center';
+        blood.style.backgroundSize = 'contain';
+        blood.style.animation = 'blood-drip 1.2s ease';
+        document.body.appendChild(blood);
+        setTimeout(() => {
+            if (blood) blood.style.opacity = '0';
+        }, 1000);
+        setTimeout(() => {
+            if (blood && blood.parentNode) blood.parentNode.removeChild(blood);
+        }, 1500);
+    }
+
+    function removeBloodEffect() {
+        const blood = document.getElementById('blood-effect');
+        if (blood) blood.parentNode.removeChild(blood);
+    }
+
+    function showLianasEffect() {
+        // Eliminar cualquier lianas-effect existente
+        const prevLianas = document.getElementById('lianas-effect');
+        if (prevLianas && prevLianas.parentNode) prevLianas.parentNode.removeChild(prevLianas);
+        let lianas = document.createElement('div');
+        lianas.id = 'lianas-effect';
+        lianas.style.position = 'fixed';
+        lianas.style.bottom = '0';
+        lianas.style.left = '0';
+        lianas.style.width = '100vw';
+        lianas.style.height = '100vh';
+        lianas.style.pointerEvents = 'none';
+        lianas.style.zIndex = '1000';
+        lianas.style.background = 'url("imagenes/lianas.png") no-repeat bottom center';
+        lianas.style.backgroundSize = 'contain';
+        lianas.style.animation = 'lianas-grow 2.5s ease';
+        document.body.appendChild(lianas);
+        setTimeout(() => {
+            if (lianas) lianas.style.opacity = '0';
+        }, 1000);
+        setTimeout(() => {
+            if (lianas && lianas.parentNode) lianas.parentNode.removeChild(lianas);
+        }, 1500);
+    }
+
+    if (vampireToggle && moonIcon) {
+        vampireToggle.addEventListener('click', function() {
+            vampireActive = !vampireActive;
+            document.body.classList.toggle('vampire-theme', vampireActive);
+            // Cambiar icono del botón de tema
+            if (moonIcon) {
+                if (vampireActive) {
+                    moonIcon.classList.remove('fa-moon');
+                    moonIcon.classList.add('fa-sun');
+                    moonIcon.style.color = '#fff';
+                } else {
+                    moonIcon.classList.remove('fa-sun');
+                    moonIcon.classList.add('fa-moon');
+                    moonIcon.style.color = '#b3001b';
+                }
+            }
+            // Cambiar icono del navbar
+            if (navbarIcon) {
+                if (vampireActive) {
+                    navbarIcon.classList.remove('fa-leaf');
+                    navbarIcon.classList.add('fa-moon');
+                } else {
+                    navbarIcon.classList.remove('fa-moon');
+                    navbarIcon.classList.add('fa-leaf');
+                }
+            }
+            // Reiniciar partículas
+            stopLeafEffect();
+            setTimeout(() => { if (window.pageYOffset > 100) startLeafEffect(); }, 100);
+            // Cambiar iconos flotantes
+            updateFloatingIcons();
+            // Efecto sangre visual
+            if (vampireActive) {
+                showBloodEffect();
+            } else {
+                removeBloodEffect();
+                showLianasEffect();
+            }
+        });
+    }
 
     // Efectos de typing para el título
     const heroTitle = document.querySelector('.hero-title .gradient-text');
@@ -312,6 +419,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Cambiar floating-elements según la temática
+    const floatingElements = document.querySelectorAll('.floating-element');
+    const floatingIconsNormal = ['🌸', '🍃'];
+    const floatingIconsVampire = ['🩸', '🩸'];
+
+    function updateFloatingIcons() {
+        if (floatingElements.length >= 2) {
+            if (vampireActive) {
+                floatingElements[0].textContent = floatingIconsVampire[0];
+                floatingElements[1].textContent = floatingIconsVampire[1];
+            } else {
+                floatingElements[0].textContent = floatingIconsNormal[0];
+                floatingElements[1].textContent = floatingIconsNormal[1];
+            }
+        }
+    }
+
+    // Inicializar al cargar
+    updateFloatingIcons();
 
     console.log('🎮 Xiaruno VTuber Page - ¡Cargada con éxito! 🌱');
 }); 
